@@ -1,0 +1,16 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  unit-test:
+    uses: ./.github/workflows/unit-test.yaml
+    secrets: inherit
+
+  pnpm-dependencies-scan:
+    uses: ./.github/workflows/pnpm-dependencies-scan.yaml
