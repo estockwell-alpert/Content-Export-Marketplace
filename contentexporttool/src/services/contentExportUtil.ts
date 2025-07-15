@@ -35,7 +35,8 @@ export const GenerateContentExport = async (
     const querystring = GetSearchQuery(startItem, templates, fields, languages, cursor);
 
     // make GQL request
-    results = await makeGraphQLQuery(appContext, client, querystring);
+    const response = await makeGraphQLQuery(appContext, client, querystring);
+    results = response.data.data.search.results;
   
     console.log(results);
   
@@ -148,6 +149,9 @@ export const GenerateContentExport = async (
       csvString += csvData[i] + '\n';
     }
   
+    console.log(csvString);
+
+    // DOWNLOAD WON'T WORK UNTIL SITECORE UPDATES SANDBOX PERMISSION
     const element = document.createElement('a');
     element.innerHTML = 'DOWNLOAD';
     element.classList.add('downloadBtn');
