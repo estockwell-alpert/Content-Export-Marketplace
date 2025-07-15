@@ -200,12 +200,11 @@ export const GetTemplateSchema = async (
   
     const allTemplatesQuery = GetSchemaQuery(startItem, templateTemplateId);
 
-    const allTemplatesResponse = await makeGraphQLQuery(appContext, client, allTemplatesQuery)
-  
-    const jsonResults = await allTemplatesResponse.json();
-    console.log(JSON.stringify(jsonResults));
+    const response = await makeGraphQLQuery(appContext, client, allTemplatesQuery);
 
-    const templateResults = jsonResults?.data?.search?.results;
+    const templateResults = response?.data?.data?.search?.results;
+
+    if (!templateResults) return;
   
     for (let i = 0; i < templateResults.length; i++) {
       const template = templateResults[i]?.innerItem;
@@ -249,11 +248,10 @@ export const GetTemplateSchema = async (
         console.log('Getting fields for ' + templateId);
         const allFieldsQuery = GetSchemaQuery(templateId, fieldTemplateId);
 
-        const fieldsResponse: any = await makeGraphQLQuery(appContext, client, allFieldsQuery);
+        const fieldsResponse = await makeGraphQLQuery(appContext, client, allFieldsQuery);
 
-        const fieldResults = await fieldsResponse.json();
-
-        const fieldsJson = fieldResults?.data?.search?.results;
+        console.log(fieldsResponse);
+        const fieldsJson = fieldsResponse?.data?.data?.search?.results;
         //console.log(JSON.stringify(fieldsJson));
 
         for (let f = 0; f < fieldsJson.length; f++) {
@@ -344,13 +342,12 @@ export const GetTemplateSchema = async (
     // get all templates...
     const allTemplatesQuery = GetSchemaQuery(startItem, templateTemplateId);
 
-    const allTemplatesResponse: any = await makeGraphQLQuery(appContext, client, allTemplatesQuery)
+    const response = await makeGraphQLQuery(appContext, client, allTemplatesQuery);
+    const templateResults = response?.data?.data?.search?.results;
+
+    if (!templateResults?.length || templateResults.length < 1) { return [] }
   
-    const jsonResults = await allTemplatesResponse.json();
-  
-    const templateResults = jsonResults?.data?.search?.results;
-  
-    console.log(templateResults.length + ' results for ' + startItem);
+    console.log(templateResults?.length + ' results for ' + startItem);
   
     for (let i = 0; i < templateResults.length; i++) {
       const template = templateResults[i]?.innerItem;

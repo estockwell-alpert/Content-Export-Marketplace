@@ -195,6 +195,8 @@ export const ExportTool: FC<ExportToolProps> = ({appContext, client}) => {
 
       console.log(results);
 
+      if (!results) return;
+
       for (let i = 0; i < results.length; i++) {
         const template = results[i];
         for (let s = 0; s < template.sections.length; s++) {
