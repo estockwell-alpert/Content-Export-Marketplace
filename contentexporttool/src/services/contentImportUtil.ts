@@ -3,15 +3,14 @@ import { ITemplateSchema, IWorksheetSchema, IField } from '@/models/Templates';
 import { UpdateQueryTemplate, CreateQueryTemplate } from '@/templates/importQueryTemplates';
 import { makeGraphQLQuery } from '@/utils/helpers';
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
-
 import * as XLSX from 'xlsx';
 
 export const PostMutationQuery = async (
     appContext: ApplicationContext | null,
     client: ClientSDK | null,
     update: boolean,
+    file: File,
     csvData?: any[],
-    file?: File
 ): Promise<string[]> => {
     // show loading modal
     const loadingModal = document.getElementById('loading-modal');
@@ -26,7 +25,7 @@ export const PostMutationQuery = async (
         console.log(workbook);
         for (let i = 0; i < workbook.SheetNames.length; i++) {
             const sheet = workbook.Sheets[workbook.SheetNames[i]];
-            const worksheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+            const worksheetData = XLSX.utils.sheet_to_json(sheet);
 
             console.log(worksheetData);
             if (!csvData) {
@@ -145,7 +144,7 @@ export const PostMutationQuery = async (
     let messages: string[] = [];
 
     if (successfullQueries > 0) {
-        messages.push('Successfully created ' + successfullQueries + ' template(s)');
+        messages.push('Successfully updated ' + successfullQueries + ' item(s)');
     }
 
     if (errors.length > 0) {

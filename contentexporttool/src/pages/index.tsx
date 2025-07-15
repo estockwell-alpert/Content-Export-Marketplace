@@ -2,7 +2,7 @@
 import { useMarketplaceClient } from "@/utils/hooks/useMarketplaceClient";
 import { useState, useEffect } from "react";
 import sitecoreTheme, { toastOptions } from '@sitecore/blok-theme'
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, Spinner } from "@chakra-ui/react";
 import { ExportTool } from "@/components/ContentExport";
 import { TabsContent, TabsList, TabsTrigger, Tabs } from "@/ui/tabs";
 import { ImportTool } from "@/components/ContentImport";
@@ -45,7 +45,7 @@ export default function Home() {
             <div className="fixed inset-0 bg-black/50 hidden" id="loading-modal">
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg">
                 <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                  <Spinner size="xl" />
                 </div>
               </div>
             </div>

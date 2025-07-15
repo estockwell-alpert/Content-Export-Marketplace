@@ -152,20 +152,13 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
             }
 
             if (isUpdate) {
-                const messages = await PostMutationQuery(appContext, client, true, parsedCsvData);
+                const messages = await PostMutationQuery(appContext, client, true, selectedFile, parsedCsvData);
                 console.log(messages);
                 setErrors(errors);
             } else if (isCreate) {
-                const messages = await PostMutationQuery(appContext, client, false, parsedCsvData);
+                const messages = await PostMutationQuery(appContext, client, false, selectedFile, parsedCsvData);
                 console.log(messages);
                 setErrors(messages);
-            }
-
-            const message = isUpdate ? 'Update' : 'Create';
-            if (errors && errors.length > 0) {
-                alert(message + ' completed with errors; check error messages');
-            } else {
-                alert(message + 'd ' + parsedCsvData.length + ' items');
             }
 
             // clear out csv data

@@ -1,4 +1,5 @@
 :root {
+    --color-black: black;
     --spacing: .25rem;
     --background: oklch(1 0 0);
     --foreground: oklch(.145 0 0);
@@ -76,8 +77,25 @@ a {
   }
 }
 
+.bg-white {
+  background-color: white;
+}
+
 .fixed {
   z-index: 9;
+  position:fixed;
+}
+
+.absolute, .sr-only {
+  position: absolute;
+}
+
+.left-1\/2 {
+  left: 50%;
+}
+
+.top-1\/2 {
+  top: 50%;
 }
 
 p[data-slot='dialog-description'] {
@@ -614,4 +632,23 @@ a {
 }
 .auto {
   width: auto;
+}
+.bg-black\/50 {
+  background-color: 
+  color-mix(in oklab, var(--color-black) 50%, transparent);
+}
+.inset-0 {
+  inset: calc(var(--spacing) * 0);
+}
+.shadow-lg {
+  --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color, #0000001a), 0 4px 6px -4px var(--tw-shadow-color, #0000001a);
+}
+.shadow-\[0_0_0_1px_hsl\(var\(--sidebar-border\)\)\], .shadow-lg {
+  box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+}
+.animate-spin {
+  animation: var(--animate-spin);
+}
+.hidden {
+  display: none;
 }
