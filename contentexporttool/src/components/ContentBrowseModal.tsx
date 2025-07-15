@@ -4,9 +4,11 @@ import { stripGuid } from "@/utils/helpers";
 import { Button } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, FC } from "react";
 import { ContentNode } from "./ContentNode";
-
+import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 
 interface ContentBrowseModalProps {
+  appContext: ApplicationContext | null,
+  client: ClientSDK | null,
   selectNode: (e: any) => void;
   currentSelections: IContentNode[];
   setCurrentSelections: Dispatch<SetStateAction<any[]>>;
@@ -19,6 +21,8 @@ interface ContentBrowseModalProps {
 }
 
 export const ContentBrowseModal: FC<ContentBrowseModalProps> = ({
+  appContext,
+  client,
   selectNode,
   currentSelections,
   setCurrentSelections,
@@ -52,6 +56,8 @@ export const ContentBrowseModal: FC<ContentBrowseModalProps> = ({
           <div className="browse-box">
             <ul>
               <ContentNode
+                appContext={appContext}
+                client={client}
                 item={{
                   itemId: startNode.itemId,
                   name: startNode.name,

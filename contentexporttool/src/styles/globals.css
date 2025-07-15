@@ -40,3 +40,180 @@ a {
     color-scheme: dark;
   }
 }
+
+.fixed {
+  z-index: 9;
+}
+
+p[data-slot='dialog-description'] {
+  a {
+    color: #3498db;
+  }
+}
+
+ul {
+  list-style: none;
+}
+
+.team-header {
+  gap: 24px;
+  align-items: end;
+}
+
+.team-cards a {
+  color: #3498db;
+}
+
+.team-cards img {
+  border-radius: 50%;
+  max-width: 100px;
+  max-height: 100px;
+}
+
+.team-cards .row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.team-cards .row img {
+  border-radius: 50%;
+}
+
+.team-cards h3 {
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.errors {
+  color: red;
+
+  span {
+    display: block;
+  }
+}
+
+.fieldsList {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.fieldsList a {
+  cursor: pointer;
+}
+
+a.disabled {
+  pointer-events: none;
+  color: #ddd;
+}
+
+.error {
+  color: red;
+}
+
+textarea.error {
+  border-color: red;
+  background-color: rgba(255, 0, 0, 0.1);
+  color: black;
+}
+
+textarea.error:focus {
+  --tw-ring-color: color-mix(in oklab, red 50%, transparent);
+}
+
+button {
+  cursor: pointer;
+}
+
+.link {
+  color: #0091e6;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.content-tree .inner {
+  position: fixed;
+  background: white;
+  left: 30%;
+  right: 50%;
+  top: 20%;
+  z-index: 999;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  width: 50%;
+  height: 50%;
+  padding: 8px;
+}
+
+.browse-box,
+.selected-box {
+  width: 50%;
+  height: 100%;
+  overflow: auto;
+  display: inline-block;
+  padding: 4px 12px;
+}
+
+.content-tree {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  display: none;
+}
+
+.content-tree.open {
+  display: block;
+}
+
+.content-tree li {
+  position: relative;
+  white-space: nowrap;
+}
+
+.browse-expand {
+  position: absolute;
+  color: rgb(38, 148, 192);
+  cursor: pointer;
+}
+
+a.sitecore-node {
+  padding-left: 14px;
+  cursor: pointer;
+}
+
+.sitecore-node.selected {
+  color: #ccc;
+}
+
+.not-selectable {
+  pointer-events: none;
+  color: #aaa;
+}
+
+a {
+  cursor: pointer;
+}
+
+.content-tree li > ul {
+  margin-left: 12px;
+  display: none;
+}
+
+.content-tree ul.open {
+  display: block;
+}
+
+.content-tree .selected-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}

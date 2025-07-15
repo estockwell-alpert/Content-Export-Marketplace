@@ -5,8 +5,11 @@ import { convertStringToGuid } from '@/utils/helpers';
 import React, { FC } from 'react';
 import cn from 'classnames';
 import { GetItemChildren } from '@/services/contentExportUtil';
+import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 
 interface ContentNodeProps {
+  appContext: ApplicationContext | null,
+  client: ClientSDK | null,
   item: IContentNode;
   selectNode: (e: any) => void;
   currentSelections: IContentNode[];
@@ -14,6 +17,8 @@ interface ContentNodeProps {
 }
 
 export const ContentNode: FC<ContentNodeProps> = ({
+  appContext,
+  client,
   item,
   selectNode,
   currentSelections,
@@ -26,8 +31,9 @@ export const ContentNode: FC<ContentNodeProps> = ({
   const toggleNode = async (e: any) => {
     if (!isLoaded) {
       const id = e.target.parentElement.getAttribute('data-id');
-      const results = await GetItemChildren(id);
-      const children = results.children;
+      const results = await GetItemChildren(appContext, client, id);
+      const children = results.data.data.item.children.nodes;
+
       console.log(children);
 
       setChildren(children);
@@ -67,6 +73,8 @@ export const ContentNode: FC<ContentNodeProps> = ({
         {children &&
           children.map((child, index) => (
             <ContentNode
+              appContext={appContext}
+              client={client}
               key={index}
               item={child}
               selectNode={selectNode}

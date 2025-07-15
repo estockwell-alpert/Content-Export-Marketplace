@@ -290,6 +290,8 @@ export const ExportTool: FC<ExportToolProps> = ({appContext, client}) => {
     <>
       {/* Content Browse */}
       <ContentBrowseModal
+        appContext={appContext}
+        client={client}
         browseContentOpen={browseContentOpen}
         setBrowseContentOpen={setBrowseContentOpen}
         selectNode={selectNode}
@@ -302,6 +304,8 @@ export const ExportTool: FC<ExportToolProps> = ({appContext, client}) => {
 
       {/* Template Browse */}
       <ContentBrowseModal
+        appContext={appContext}
+        client={client}
         browseContentOpen={browseTemplatesOpen}
         setBrowseContentOpen={setBrowseTemplatesOpen}
         selectNode={selectTemplateNode}
