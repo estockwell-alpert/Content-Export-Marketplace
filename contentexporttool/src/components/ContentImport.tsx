@@ -146,7 +146,7 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
 
     const handleRunImport = async () => {
         try {
-            if (!parsedCsvData) {
+            if (!selectedFile) {
                 alert('Please upload a file');
                 return;
             }
@@ -201,7 +201,7 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                                 key={fileKey}
                                 id="inptFile"
                                 type="file"
-                                accept=".csv,.xslx"
+                                accept=".csv,.xlsx"
                                 onChange={onFileChange}
                                 className="cursor-pointer"
                             />

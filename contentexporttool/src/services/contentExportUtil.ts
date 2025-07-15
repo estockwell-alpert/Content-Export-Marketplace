@@ -3,10 +3,10 @@ import { ITemplateSchema, ITemplateSection, IField } from "@/models/Templates";
 import { ItemChildrenQuery } from "@/templates/searchQueryTemplate";
 import { GetSchemaQuery, GetSearchQuery } from "@/utils/createGqlQuery";
 import { getGuids, makeGraphQLQuery, validateMultiGuids } from "@/utils/helpers";
-import { ClientSDK } from "@sitecore-marketplace-sdk/client";
+import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 
 export const GenerateContentExport = async (
-  appContext: any,
+  appContext: ApplicationContext | null,
   client: ClientSDK | null,
   startItem?: string,
   templates?: string,

@@ -6,19 +6,35 @@ import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client"
 
 import * as XLSX from 'xlsx';
 
-let errorHasBeenDisplayed = false;
-
 export const PostMutationQuery = async (
     appContext: ApplicationContext | null,
     client: ClientSDK | null,
     update: boolean,
-    csvData?: any[]
+    csvData?: any[],
+    file?: File
 ): Promise<string[]> => {
-    errorHasBeenDisplayed = false;
     // show loading modal
     const loadingModal = document.getElementById('loading-modal');
     if (loadingModal) {
         loadingModal.style.display = 'block';
+    }
+
+    if (!csvData && file?.name.endsWith('.xlsx')) {
+        console.log('Excel file');
+        const fileData = await file.arrayBuffer();
+        const workbook = XLSX.read(fileData);
+        console.log(workbook);
+        for (let i = 0; i < workbook.SheetNames.length; i++) {
+            const sheet = workbook.Sheets[workbook.SheetNames[i]];
+            const worksheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+            console.log(worksheetData);
+            if (!csvData) {
+                csvData = worksheetData;
+            } else {
+                csvData = csvData.concat(worksheetData);
+            }
+        }
     }
 
 
