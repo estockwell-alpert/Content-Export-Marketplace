@@ -12,7 +12,6 @@ The [Content Export Tool](https://github.com/estockwell-alpert/ContentExportTool
    - Start Item(s): One of more item IDs specifying where to pull content from, separated by comma. Defaults to the full content tree. Use the Browse button to select items from the content tree.
    - Templates: One or more template ID to specify what types of items to export. Use the Browse button to see available templates.
    - Fields: All of the fields that you want included in the export. Null/invalid fields will return "n/a" in the export, so you can include fields that do not exist on all items. Use the Browse button to see available fields once you've selectd at least one template.
-     ![Export Page](https://github.com/Sitecore-Hackathon/2025-DED/blob/main/docs/images/Export.png)
 2. Click Run Export and wait for your CSV to download!
 
 ### Content Import:
@@ -34,4 +33,3 @@ Example files:
 
 This project was started for **Sitecore Hackathon 2025** by team DED (Dan Solovay, Erica Stockwell-Alpert, Dylan Young) at Velir, and completed for Sitecore Marketplace
 
-![Hackathon Logo](docs/images/hackathon.png?raw=true 'Hackathon Logo')
