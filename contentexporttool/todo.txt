@@ -1,0 +1,2 @@
+1. FIELD BROWSE - 
+Move this to a modal, rewrite to make better perforamnce and make sure spinner shows until fields are loaded

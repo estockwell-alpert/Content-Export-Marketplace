@@ -473,7 +473,9 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium">Fields</label>
                   <div className="flex items-center gap-2">
+
                     <Button disabled={templates === ''} size="sm" onClick={() => browseFields()}>
+
                       Browse
                     </Button>
                     <Button variant="ghost" size="sm" onClick={() => setFields('')}>
@@ -490,7 +492,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
                 {templates === '' &&
                   <Alert variant="default" className="mt-2">
                     <AlertDescription className="text-xs">
-                      Select at least one template to Browse
+                      Select at least one template to browse fields
                     </AlertDescription>
                   </Alert>
                 }
