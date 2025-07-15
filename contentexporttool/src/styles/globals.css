@@ -1,6 +1,6 @@
 :root {
-  --spacing: .25rem;
-  --background: oklch(1 0 0);
+    --spacing: .25rem;
+    --background: oklch(1 0 0);
     --foreground: oklch(.145 0 0);
     --card: oklch(1 0 0);
     --card-foreground: oklch(.145 0 0);
@@ -33,6 +33,9 @@
     --sidebar-accent-foreground: oklch(.205 0 0);
     --sidebar-border: oklch(.922 0 0);
     --sidebar-ring: oklch(.708 0 0);
+    --container-sm: 24rem;
+    --container-lg: 32rem;
+    --container-4xl: 56rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -85,6 +88,10 @@ p[data-slot='dialog-description'] {
 
 ul {
   list-style: none;
+}
+
+.list-disc {
+  list-style: initial;
 }
 
 .team-header {
@@ -588,4 +595,23 @@ a {
 }
 .whitespace-nowrap {
   white-space: nowrap;
+}
+
+.data-\[orientation\=horizontal\]\:w-full[data-orientation=horizontal] {
+  width: 100%;
+}
+.data-\[orientation\=horizontal\]\:h-px[data-orientation=horizontal] {
+  height: 1px;
+}
+.bg-border {
+  background-color: var(--border);
+}
+.bg-primary {
+  background-color: var(--colors-primary-600);
+}
+.max-w-sm {
+  max-width: var(--container-sm);
+}
+.auto {
+  width: auto;
 }

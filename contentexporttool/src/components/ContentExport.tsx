@@ -3,13 +3,14 @@ import { IContentNode } from "@/models/IContentNode";
 import { ISettings } from "@/models/ISettings";
 import { GenerateContentExport, GetTemplateSchema } from "@/services/contentExportUtil";
 import { convertStringToGuid, validateGuid } from "@/utils/helpers";
-import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap } from "@chakra-ui/react";
+import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Icon } from "@chakra-ui/react";
 import { ChangeEvent, FC, useEffect, useState } from "react";
 import { Root, createRoot } from "react-dom/client";
 import { ContentBrowseModal } from "./ContentBrowseModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 import { SaveSettingsModal } from "./SaveSettingsModal";
+import { mdiBookOpenPageVariantOutline } from "@mdi/js";
 
 interface ExportToolProps {
   appContext: ApplicationContext | null,
@@ -356,6 +357,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
           <Stack spacing={2}>
             <Heading >Export Content</Heading >
             <p>Export content from your Sitecore instance</p>
+            <a target="_blank" href="https://github.com/estockwell-alpert/Content-Export-Marketplace/blob/main/README.md#using-the-application"><Icon><path d={mdiBookOpenPageVariantOutline}></path></Icon> Documentation</a>
+
             <div className="">
               <Stack spacing="6">
                 <Wrap align="center">
