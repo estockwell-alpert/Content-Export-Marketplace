@@ -41,6 +41,7 @@ export default function Home() {
         <div className="container mx-auto py-6 px-4">
           <div className="border bg-card text-card-foreground shadow-sm">
             <div className="p-6">
+              <h1>Content Export</h1>
               <ExportTool appContext={applicationContext} client={client}/>
             </div>
           </div>

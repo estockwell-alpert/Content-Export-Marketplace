@@ -3,17 +3,13 @@ import { IContentNode } from "@/models/IContentNode";
 import { ISettings } from "@/models/ISettings";
 import { GenerateContentExport, GetTemplateSchema } from "@/services/contentExportUtil";
 import { convertStringToGuid, validateGuid } from "@/utils/helpers";
+import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody } from "@chakra-ui/react";
 import { ChangeEvent, FC, useEffect, useState } from "react";
 import { Root, createRoot } from "react-dom/client";
 import { ContentBrowseModal } from "./ContentBrowseModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 import { SaveSettingsModal } from "./SaveSettingsModal";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
-import { Button } from "@/ui/button";
-import { Textarea } from "@/ui/textarea";
-import { Alert, AlertDescription } from "@/ui/alert";
-import { Checkbox } from "@chakra-ui/react";
 
 interface ExportToolProps {
   appContext: ApplicationContext | null,
@@ -292,6 +288,32 @@ export const ExportTool: FC<ExportToolProps> = ({appContext, client}) => {
 
   return (
     <>
+      {/* Content Browse */}
+      <ContentBrowseModal
+        browseContentOpen={browseContentOpen}
+        setBrowseContentOpen={setBrowseContentOpen}
+        selectNode={selectNode}
+        currentSelections={currentSelections ?? []}
+        startItem={startItem ?? ''}
+        setStartItem={setStartItem}
+        setCurrentSelections={setCurrentSelections}
+        startNode={{ itemId: '{11111111-1111-1111-1111-111111111111}', name: 'sitecore' }}
+      ></ContentBrowseModal>
+
+      {/* Template Browse */}
+      <ContentBrowseModal
+        browseContentOpen={browseTemplatesOpen}
+        setBrowseContentOpen={setBrowseTemplatesOpen}
+        selectNode={selectTemplateNode}
+        currentSelections={currentTemplateSelections ?? []}
+        startItem={templatesStartItem ?? ''}
+        setStartItem={setTemplates}
+        setCurrentSelections={setCurrentTemplateSelections}
+        startNode={{ itemId: '{3C1715FE-6A13-4FCF-845F-DE308BA9741D}', name: 'templates' }}
+        templatesOnly={true}
+      ></ContentBrowseModal>
+
+
         <Card className="rounded-sm border bg-card p-6">
           <div className="space-y-4">
             <div className="container">
@@ -325,8 +347,8 @@ export const ExportTool: FC<ExportToolProps> = ({appContext, client}) => {
 
           <Card className="rounded-sm border bg-card p-6">
             <CardHeader>
-              <CardTitle >Export Content</CardTitle >
-              <CardDescription>Export content from your Sitecore instance</CardDescription>
+              <Heading >Export Content</Heading >
+              <p>Export content from your Sitecore instance</p>
               <div className="">
                 <div className="flex items-center gap-2 mt-4">
                   <Button variant="default" size="sm" onClick={runExport}>
@@ -341,10 +363,10 @@ export const ExportTool: FC<ExportToolProps> = ({appContext, client}) => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardBody className="space-y-6">
               <div className="space-y-4">
                 <Card className="rounded-sm border bg-card p-6">
-                  <CardTitle >Filters</CardTitle >
+                  <Heading >Filters</Heading >
                   {/* Start Items Section */}
 
                   <div className="space-y-2">
@@ -433,7 +455,7 @@ export const ExportTool: FC<ExportToolProps> = ({appContext, client}) => {
                   </div>
                 </Card>
                 <Card className="rounded-sm border bg-card p-6">
-                  <CardTitle>Data</CardTitle>
+                  <Heading>Data</Heading>
                   {/* Fields Section */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
@@ -583,7 +605,9 @@ export const ExportTool: FC<ExportToolProps> = ({appContext, client}) => {
                   </div>
                 </div>
               </div>
-            </CardContent>
+
+              <SaveSettingsModal open={isModalOpen} onOpenChange={setIsModalOpen} onSubmit={handleSaveSettings} />
+            </CardBody>
           </Card>
     </>
   );
