@@ -65,7 +65,7 @@ export const GenerateContentExport = async (
     const guidFieldDictionary: { [id: string]: [name: string] } = {};
   
     for (let i = 0; i < results.length; i++) {
-      let result = results[i];
+      let result = results[i];  
   
       result = result.innerItem;
   
