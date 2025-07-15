@@ -153,13 +153,14 @@ export const GenerateContentExport = async (
 
     // DOWNLOAD WON'T WORK UNTIL SITECORE UPDATES SANDBOX PERMISSION
     const element = document.createElement('a');
-    element.innerHTML = 'DOWNLOAD';
     element.classList.add('downloadBtn');
     const file = new Blob([csvString], { type: 'text/csv' });
     element.href = URL.createObjectURL(file);
     element.download = 'ContentExport.csv';
     document.body.appendChild(element); // Required for this to work in FireFox
     element.click();
+    // remove button after download
+    element.remove();
   
     if (loadingModal) {
       loadingModal.style.display = 'none';

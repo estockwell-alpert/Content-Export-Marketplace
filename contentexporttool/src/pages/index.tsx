@@ -8,8 +8,8 @@ import { ExportTool } from "@/components/ContentExport";
 export default function Home() {
 
   const { client, error, isInitialized } = useMarketplaceClient();
-  const [applicationContext, setApplicationContext] = useState({id: '', url: ''});
-  
+  const [applicationContext, setApplicationContext] = useState({ id: '', url: '' });
+
   useEffect(() => {
     if (!error && isInitialized && client) {
       console.log("Marketplace client initialized successfully.");
@@ -20,7 +20,7 @@ export default function Home() {
           if (appContextResponse?.data) {
             setApplicationContext(appContextResponse.data);
           } else {
-            setApplicationContext({id: '', url: ''});
+            setApplicationContext({ id: '', url: '' });
             console.warn('Application context data not found in response:', appContextResponse);
           }
         })
@@ -32,20 +32,16 @@ export default function Home() {
       console.error("Error initializing Marketplace client:", error);
     }
   }, [client, error, isInitialized]);
-  
+
   return (
     <>
-<ChakraProvider theme={sitecoreTheme} toastOptions={toastOptions}>
-
-
+      <ChakraProvider theme={sitecoreTheme} toastOptions={toastOptions}>
         <div className="container mx-auto py-6 px-4">
           <div className="border bg-card text-card-foreground shadow-sm">
-            <div className="p-6">
-              <ExportTool appContext={applicationContext} client={client}/>
-            </div>
+            <ExportTool appContext={applicationContext} client={client} />
           </div>
         </div>
-    </ChakraProvider>
+      </ChakraProvider>
     </>
   );
 }
