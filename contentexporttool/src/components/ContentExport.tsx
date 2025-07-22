@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IContentNode } from "@/models/IContentNode";
 import { ISettings } from "@/models/ISettings";
-import { GenerateContentExport, GetTemplateSchema } from "@/services/contentExportUtil";
+import { GenerateContentExport, GetAvailableFields } from "@/services/contentExportUtil";
 import { convertStringToGuid, validateGuid } from "@/utils/helpers";
 import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Select } from "@chakra-ui/react";
 import { ChangeEvent, FC, useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import { Root, createRoot } from "react-dom/client";
 import { ContentBrowseModal } from "./ContentBrowseModal";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 import { SaveSettingsModal } from "./SaveSettingsModal";
+import { FieldBrowseModal } from "./FieldBrowseModal";
 
 interface ExportToolProps {
   appContext: ApplicationContext | null,
@@ -36,6 +37,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
   const [errorTemplates, setErrorTemplates] = useState<boolean>(false);
   const [browseContentOpen, setBrowseContentOpen] = useState<boolean>(false);
   const [browseTemplatesOpen, setBrowseTemplatesOpen] = useState<boolean>(false);
+  const [browseFieldsOpen, setBrowseFieldsOpen] = useState<boolean>(false);
   const [contentMainRoot, setContentMainRoot] = useState<Root>();
   const [currentSelections, setCurrentSelections] = useState<any[]>([]);
   const [currentTemplateSelections, setCurrentTemplateSelections] = useState<any[]>([]);
@@ -133,22 +135,6 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
     );
   };
 
-  const fieldIsSelected = (field: string): boolean => {
-    const currentFields = fields?.split(',').map((x) => x.trim());
-
-    return currentFields?.includes(field) ?? false;
-  };
-
-  const addField = (field: string) => {
-    if (fieldIsSelected(field)) return;
-
-    if (fields) {
-      setFields(fields + ', ' + field);
-    } else {
-      setFields(field);
-    }
-  };
-
   const resetTree = () => {
     if (contentMainRoot) {
       contentMainRoot.render(<ul id={sitecoreRootId}></ul>);
@@ -191,7 +177,6 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
 
   const browseFields = async () => {
     setAvailableFields([]);
-    const fieldsList: string[] = [];
 
     if (!templates) {
       alert('Enter at least one template ID in the Templates field');
@@ -203,27 +188,14 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
       loadingModal.style.display = 'block';
     }
 
-    const results = await GetTemplateSchema(appContext, client, templates);
+    const results = await GetAvailableFields(appContext, client, templates);
 
     console.log(results);
 
     if (!results) return;
 
-    for (let i = 0; i < results.length; i++) {
-      const template = results[i];
-      for (let s = 0; s < template.sections.length; s++) {
-        const section = template.sections[s];
-        for (let f = 0; f < section.fields.length; f++) {
-          const field = section.fields[f];
-          const fieldName = field.machineName;
-          if (fieldsList.indexOf(fieldName) === -1) {
-            fieldsList.push(fieldName);
-          }
-        }
-      }
-    }
-
-    setAvailableFields(fieldsList);
+    setAvailableFields(results);
+    setBrowseFieldsOpen(true);
 
     if (loadingModal) {
       loadingModal.style.display = 'none';
@@ -506,27 +478,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
 
                 <div className="">
 
-                  {availableFields && availableFields.length > 0 && (
-                    <div className="mt-4 space-y-2">
-                      <label className="text-sm font-medium">Available Fields</label>{' '}
-                      <Button variant="outline" size="sm" onClick={() => setFields(availableFields.join(', '))}>
-                        Select All
-                      </Button>
-                      <div className="items-center gap-2 mt-4 fieldsList">
-                        {availableFields &&
-                          availableFields.map((field, index) => (
-                            <p key={index}>
-                              <a
-                                className={fieldIsSelected(field) ? 'disabled' : ''}
-                                onDoubleClick={() => addField(field)}
-                              >
-                                {field}
-                              </a>
-                            </p>
-                          ))}
-                      </div>
-                    </div>
-                  )}
+                  <FieldBrowseModal availableFields={availableFields ?? []} fields={fields} setFields={setFields} setBrowseContentOpen={setBrowseFieldsOpen} browseContentOpen={browseFieldsOpen}></FieldBrowseModal>
                 </div>
 
                 {/* to do: make collapsible, fix to work fully with Edge */}

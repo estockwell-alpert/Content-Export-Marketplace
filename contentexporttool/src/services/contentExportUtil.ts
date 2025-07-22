@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ITemplateSchema, ITemplateSection, IField } from "@/models/Templates";
 import { ItemChildrenQuery } from "@/templates/searchQueryTemplate";
 import { GetSchemaQuery, GetSearchQuery } from "@/utils/createGqlQuery";
 import { getGuids, makeGraphQLQuery, validateMultiGuids } from "@/utils/helpers";
@@ -190,142 +189,62 @@ export const GetItemChildren = async (
   return results;
 };
 
-export const GetTemplateSchema = async (
+export const GetAvailableFields = async (
   appContext: any,
   client: ClientSDK | null,
-  startItem?: string): Promise<any> => {
+  templates?: string): Promise<string[]> => {
 
 
-  if (!startItem || startItem === '') {
+  if (!templates || templates === '') {
     alert(
       'Enter a start item. If you really want every template in Sitecore, you can enter the ID of the Templates folder. This will take a long time.'
     );
-    return;
+    return [];
   }
 
-  const templateTemplateId = '{AB86861A-6030-46C5-B394-E8F99E8B87DB}';
   const fieldTemplateId = '{455A3E98-A627-4B40-8035-E683A0331AC7}';
 
-  const results: ITemplateSchema[] = [];
+  const templateIds = templates?.split(',');
+  const baseTemplates: string[] = [];
+  const fields: string[] = [];
 
-  const allTemplatesQuery = GetSchemaQuery(startItem, templateTemplateId);
+  // get all base templates
+  for (let i = 0; i < templateIds.length; i++) {
+    const baseTemplateIds = await GetBaseTemplateIds(appContext, client, templateIds[i], 0);
 
-  const response = await makeGraphQLQuery(appContext, client, allTemplatesQuery);
-
-  const templateResults = response?.data?.data?.search?.results;
-
-  if (!templateResults) return;
-
-  for (let i = 0; i < templateResults.length; i++) {
-    const template = templateResults[i]?.innerItem;
-    if (!template) continue;
-
-    console.log('Template ' + i + ': ' + template.name + ' ' + template.itemId);
-
-    const templateResult: ITemplateSchema = {
-      templateName: template.name,
-      templatePath: template.path,
-      baseTemplates: template.baseTemplate?.value,
-      folder: template.parent?.name,
-      sections: [],
-      renderingParams: false,
-    };
-
-    if (templateResult.folder === 'Rendering Parameters') {
-      templateResult.renderingParams = true;
-      templateResult.folder = template.parent?.parent?.name;
-    }
-
-    const sections: ITemplateSection[] = [];
-
-    let templateIds = [];
-    templateIds.push(template.itemId);
-
-    const baseTemplateIds = await GetBaseTemplateIds(appContext, client, template.itemId, 0);
-    templateIds = templateIds.concat(baseTemplateIds);
-
-    console.log('BEGIN FIELDS QUERIES');
-
-    //return null;
-    // abort here for now
-
-    for (let t = 0; t < templateIds.length; t++) {
-      const templateId = templateIds[t];
-      if (templateId === '') {
-        console.log('Do not run empty query');
-        continue;
-      }
-      console.log('Getting fields for ' + templateId);
-      const allFieldsQuery = GetSchemaQuery(templateId, fieldTemplateId);
-
-      const fieldsResponse = await makeGraphQLQuery(appContext, client, allFieldsQuery);
-
-      console.log(fieldsResponse);
-      const fieldsJson = fieldsResponse?.data?.data?.search?.results;
-      //console.log(JSON.stringify(fieldsJson));
-
-      for (let f = 0; f < fieldsJson.length; f++) {
-        const field = fieldsJson[f].innerItem;
-
-        console.log('');
-        console.log('Field ' + f + ': ' + field.name);
-
-        const sectionName = field?.parent?.name;
-        const sectionIndex = sections.findIndex((x) => x.name === sectionName);
-        let section: ITemplateSection;
-        if (sectionIndex === -1) {
-          section = {
-            name: sectionName,
-            fields: [],
-          };
-        } else {
-          section = sections[sectionIndex];
-        }
-
-        const workflow = field.workflow?.value;
-        let required = false;
-        // field.workflow?.value?.contains('{59D4EE10-627C-4FD3-A964-61A88B092CBC}')
-        if (workflow && workflow.toString().indexOf('{59D4EE10-627C-4FD3-A964-61A88B092CBC}') > -1) {
-          required = true;
-        }
-
-        // update section
-        const fieldObj: IField = {
-          template: '',
-          path: '',
-          baseTemplates: '',
-          section: '',
-          name: field.title?.value,
-          machineName: field.name,
-          fieldType: field.type?.value,
-          required: required ? 'true' : undefined,
-          source: field.source?.value,
-          defaultValue: field.defaultValue?.value,
-          helpText: field.helpText?.value,
-          inheritedFrom: field.parent?.parent?.itemId !== template.itemId ? field.parent?.parent?.name : '',
-          sortOrder: parseInt(field.sortOrder?.value ?? 0),
-        };
-
-        if (section.fields.some((field) => field.name == fieldObj.name)) {
-          console.log('SECTION ALREADY CONTAINS FIELD');
-        } else {
-          section.fields.push(fieldObj);
-        }
-
-        if (sectionIndex === -1) {
-          sections.push(section);
-        } else {
-          sections[sectionIndex] = section;
-        }
+    for (let j = 0; j < baseTemplateIds.length; j++) {
+      if (!baseTemplates.includes(baseTemplateIds[j])) {
+        baseTemplates.push(baseTemplateIds[j]);
       }
     }
-
-    templateResult.sections = sections;
-    results.push(templateResult);
   }
 
-  return results;
-};
+  console.log('BEGIN FIELD QUERIES');
+
+  if (baseTemplates.length === 0) return [];
+  console.log('Getting fields for ' + baseTemplates.join(", "));
+  const allFieldsQuery = GetSearchQuery(baseTemplates.join(","), fieldTemplateId);
+
+  const fieldsResponse = await makeGraphQLQuery(appContext, client, allFieldsQuery);
+
+  console.log(fieldsResponse);
+  const fieldsJson = fieldsResponse?.data?.data?.search?.results;
+  //console.log(JSON.stringify(fieldsJson));
+
+  for (let f = 0; f < fieldsJson.length; f++) {
+    const field = fieldsJson[f].innerItem;
+
+    console.log('');
+    console.log('Field ' + f + ': ' + field.name);
+
+    if (!fields.includes(field.name)) {
+      fields.push(field.name);
+    }
+  }
+
+
+  return fields.sort();
+}
 
 export const GetBaseTemplateIds = async (
   appContext: any,
@@ -353,7 +272,7 @@ export const GetBaseTemplateIds = async (
   const allTemplatesQuery = GetSchemaQuery(startItem, templateTemplateId);
 
   const response = await makeGraphQLQuery(appContext, client, allTemplatesQuery);
-  const templateResults = response?.data?.data?.search?.results;
+  const templateResults = response?.data?.data?.search?.results ?? response?.results;
 
   if (!templateResults?.length || templateResults.length < 1) { return [] }
 

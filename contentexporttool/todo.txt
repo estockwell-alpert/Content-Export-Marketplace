@@ -2,5 +2,4 @@
 Move this to a modal, rewrite to make better perforamnce and make sure spinner shows until fields are loaded
 
 2. IMPORT!
-
-3. Saved Settings
+- get Success message to show

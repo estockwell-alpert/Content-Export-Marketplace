@@ -134,9 +134,6 @@ export const SchemaQueryTemplate = gql`
               }
             }
           }
-          workflow: field(name: "Workflow") {
-            value
-          }
           baseTemplate: field(name: "__Base template") {
             value
           }
@@ -144,18 +141,6 @@ export const SchemaQueryTemplate = gql`
             value
           }
           title: field(name: "Title") {
-            value
-          }
-          source: field(name: "Source") {
-            value
-          }
-          helpText: field(name: "__Short description") {
-            value
-          }
-          defaultValue: field(name: "Default value") {
-            value
-          }
-          sortOrder: field(name: "__Sortorder") {
             value
           }
         }
