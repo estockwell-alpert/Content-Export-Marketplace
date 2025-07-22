@@ -19,6 +19,7 @@ export const FieldBrowseModal: FC<FieldBrowseModalProps> = ({
 }) => {
 
   const addOrRemoveItem = (name: string) => {
+    name = name.trim();
     if (fieldIsSelected(name)) {
       removeItem(name);
     } else {
@@ -27,17 +28,20 @@ export const FieldBrowseModal: FC<FieldBrowseModalProps> = ({
   }
 
   const removeItem = (name: string) => {
-    const updatedSelections = fields?.split(',').filter((field) => field !== name);
+    name = name.trim();
+    const updatedSelections = fields?.split(',')?.map((field) => field.trim()).filter((field) => field !== name);
     setFields(updatedSelections?.join(', ') ?? '');
   };
 
   const fieldIsSelected = (field: string): boolean => {
+    field = field.trim();
     const currentFields = fields?.split(',').map((x) => x.trim());
 
     return currentFields?.includes(field) ?? false;
   };
 
   const addField = (field: string) => {
+    field = field.trim();
     if (fieldIsSelected(field)) return;
 
     if (fields) {
@@ -54,11 +58,17 @@ export const FieldBrowseModal: FC<FieldBrowseModalProps> = ({
           <div className="browse-box">
             <ul>
               {availableFields && availableFields.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  <label className="text-sm font-medium">Available Fields</label>{' '}
-                  <Button variant="outline" size="sm" onClick={() => setFields(availableFields.join(', '))}>
-                    Select All
-                  </Button>
+                <div className="mt-4 space-y-2 ">
+
+                  <div className="flex items-center gap-2 mt-4">
+                    <label className="text-sm font-medium">Available Fields</label>{' '}
+                    <Button variant="solid" size="sm" onClick={() => setFields(availableFields.join(', '))}>
+                      Select All
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => setFields('')}>
+                      Remove All
+                    </Button>
+                  </div>
                   <div className="items-center gap-2 mt-4 fieldsList">
                     {availableFields &&
                       availableFields.map((field, index) => (
@@ -77,9 +87,33 @@ export const FieldBrowseModal: FC<FieldBrowseModalProps> = ({
             </ul>
           </div>
           <div className="selected-box">
-            <Button variant="ghost" size="sm" onClick={() => setBrowseContentOpen(false)}>
-              Close
-            </Button>
+            <div className="selected-inner">
+              <div className="flex justify-between gap-2">
+                <ul>
+                  {fields !== "" && (
+                    <li>
+                      <b>Selected:</b> (double click to remove)
+                    </li>
+                  )}
+                  {fields?.split(',').map((field, index) => (
+                    <li key={index}>
+                      <a
+                        onDoubleClick={() => removeItem(field)}
+                        data-id={field}
+                        data-name={field}
+                        key={index}
+                      >
+                        {field}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="solid" size="sm" onClick={() => setBrowseContentOpen(false)}>
+                  Close
+                </Button>
+              </div></div>
           </div>
         </div>
       </div>

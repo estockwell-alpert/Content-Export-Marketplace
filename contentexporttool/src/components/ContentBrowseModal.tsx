@@ -53,6 +53,11 @@ export const ContentBrowseModal: FC<ContentBrowseModalProps> = ({
     <>
       <div id="content-tree" className={'content-tree modal ' + (browseContentOpen ? 'open' : '')}>
         <div className="inner">
+          <div className="absolute right flex justify-end gap-2">
+            <Button className="mobile" variant="outline" size="sm" onClick={() => setBrowseContentOpen(false)}>
+              Close
+            </Button>
+          </div>
           <div className="browse-box">
             <ul>
               <ContentNode
@@ -94,15 +99,15 @@ export const ContentBrowseModal: FC<ContentBrowseModalProps> = ({
                       </li>
                     ))}
                 </ul>
-                <Button variant="ghost" size="sm" onClick={() => setBrowseContentOpen(false)}>
+                <Button className="desktop" variant="outline" size="sm" onClick={() => setBrowseContentOpen(false)}>
                   Close
                 </Button>
               </div>
               <div className="flex justify-end gap-2">
-                <Button variant="ghost" size="sm" onClick={() => setCurrentSelections([])}>
+                <Button variant="outline" size="sm" onClick={() => setCurrentSelections([])}>
                   Clear Selections
                 </Button>
-                <Button variant="default" size="sm" onClick={confirmSelection}>
+                <Button variant="solid" size="sm" onClick={confirmSelection}>
                   Confirm Selections
                 </Button>
               </div>
