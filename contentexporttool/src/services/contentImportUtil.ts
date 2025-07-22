@@ -38,8 +38,10 @@ export const PostMutationQuery = async (
 
 
     if (!csvData) {
-        alert('No file data found');
-        return [];
+        if (loadingModal) {
+            loadingModal.style.display = 'none';
+        }
+        return ['No file data found'];
     }
 
     const queries = [];
@@ -61,11 +63,10 @@ export const PostMutationQuery = async (
         query = query.replace('ItemTemplate', row['Template']);
 
         if (!update && (!row['Item Path'] || !row['Name'] || !row['Template'])) {
-            alert('Missing required columns. Please make sure your CSV includes columns for Item Path, Template, and Name');
             if (loadingModal) {
                 loadingModal.style.display = 'none';
             }
-            return [];
+            return ['Missing required columns. Please make sure your CSV includes columns for Item Path, Template, and Name'];
         }
 
         if (row['Language']) {
@@ -116,10 +117,10 @@ export const PostMutationQuery = async (
             console.log(results);
 
             // test this
-            if (results.errors) {
-                for (let j = 0; j < results.errors.length; j++) {
-                    const error = results.errors[j];
-                    errors.push(error.message.replace(/[\r\n]+/gm, ' '));
+            if (results.data.errors) {
+                for (let j = 0; j < results.data.errors.length; j++) {
+                    const error = results.data.errors[j];
+                    errors.push("Error on Line " + (i + 2) + ": " + error.message.replace(/[\r\n]+/gm, ' '));
                 }
             } else {
                 successfullQueries++;
@@ -255,8 +256,7 @@ export const ResultsToXslx = (templates: ITemplateSchema[], fileName?: string, h
         ];
 
     if (worksheets.length === 0) {
-        alert('No results found');
-        return;
+        return ['No results found'];
     }
 
     // add every worksheet to file

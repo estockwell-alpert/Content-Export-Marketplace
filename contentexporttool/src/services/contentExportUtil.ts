@@ -165,6 +165,7 @@ export const GenerateContentExport = async (
   element.href = URL.createObjectURL(file);
   element.innerHTML = "DOWNLOAD"
   element.download = 'ContentExport.csv';
+  element.setAttribute("download", "Content Export.csv");
   document.body.appendChild(element); // Required for this to work in FireFox
   element.click();
   // remove button after download
@@ -196,7 +197,7 @@ export const GetAvailableFields = async (
 
 
   if (!templates || templates === '') {
-    alert(
+    console.log(
       'Enter a start item. If you really want every template in Sitecore, you can enter the ID of the Templates folder. This will take a long time.'
     );
     return [];

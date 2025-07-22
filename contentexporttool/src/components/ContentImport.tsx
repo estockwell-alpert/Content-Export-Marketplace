@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ITemplateSchema } from "@/models/Templates";
-import { PostMutationQuery, ResultsToXslx } from "@/services/contentImportUtil";
-import { Card, CardHeader, Input, Button, Alert, AlertDescription, Stack, Heading, Icon } from "@chakra-ui/react";
+import { PostMutationQuery } from "@/services/contentImportUtil";
+import { Card, CardHeader, Input, Button, Alert, AlertDescription, Stack, Heading, AlertIcon } from "@chakra-ui/react";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 import Papa from 'papaparse';
 import { FC, useState } from "react";
 import { Separator } from "./ui/separator";
 import { CardContent } from "./ui/card";
-import { mdiBookOpenPageVariantOutline } from "@mdi/js";
 
 
 interface ImportTool {
@@ -21,6 +19,8 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
     const [isCreate, setIsCreate] = useState<boolean>(false);
     const [parsedCsvData, setParsedCsvData] = useState<any>();
     const [errors, setErrors] = useState<string[]>([]);
+    const [success, setSuccess] = useState<boolean>(false);
+    const [successMessage, setSuccessMessage] = useState<string>();
     const [fileKey, setFileKey] = useState<string>('');
 
     const clearFileInput = () => {
@@ -28,9 +28,12 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
         //inpt.value
         setFileKey(Math.random().toString(36));
         setSelectedFile(undefined);
+        setSuccess(false);
+        setErrors([]);
     };
 
     const onFileChange = (event: any) => {
+        setSuccess(false);
         setErrors([]);
         setParsedCsvData(null);
         // Update the state
@@ -57,107 +60,33 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
         }
     };
 
-    const downloadExample = async () => {
-        const templates: ITemplateSchema[] = [];
-
-        templates.push({
-            templateName: 'Promo',
-            templatePath: '{7479293E-4A3A-47C8-9370-2D32EF37E07C}',
-            baseTemplates: '{1930BBEB-7805-471A-A3BE-4858AC7CF696}',
-            folder: 'Templates',
-            sections: [
-                {
-                    name: 'Content',
-                    fields: [
-                        {
-                            template: '',
-                            path: '',
-                            section: '',
-                            name: 'Image',
-                            machineName: 'image',
-                            fieldType: 'Image',
-                            source: '',
-                        },
-                        {
-                            template: '',
-                            path: '',
-                            section: '',
-                            name: 'Heading',
-                            machineName: 'heading',
-                            fieldType: 'Single-Line Text',
-                            source: '',
-                            defaultValue: '$name',
-                        },
-                        {
-                            template: '',
-                            path: '',
-                            section: '',
-                            name: 'Link 1',
-                            machineName: 'link1',
-                            fieldType: 'General Link',
-                            source: '',
-                        },
-                    ],
-                },
-                {
-                    name: 'Search',
-                    fields: [
-                        {
-                            template: '',
-                            path: '',
-                            section: '',
-                            name: 'Content Type',
-                            machineName: 'contentType',
-                            fieldType: 'Droplist',
-                            source: 'query:$site/Search/Enumerations/Content Type/*',
-                        },
-                        {
-                            template: '',
-                            path: '',
-                            section: '',
-                            name: 'Taxonomies',
-                            machineName: 'taxonomies',
-                            fieldType: 'Multiroot Treelist',
-                            source: '{5344462B-31B3-443B-8FD5-8A7A881A66A3}',
-                            helpText: 'not displayed, only used for search',
-                        },
-                    ],
-                },
-            ],
-        });
-
-        const headers = [
-            'Template',
-            'Parent',
-            'Base Templates',
-            'Section',
-            'Field Name',
-            'Machine Name',
-            'Field Type',
-            'Required',
-            'Source',
-            'Default Value',
-            'Help Text',
-            ' ',
-        ];
-
-        ResultsToXslx(templates, 'Example Schema Import', headers);
-    };
-
     const handleRunImport = async () => {
+        setSuccess(false);
+        setErrors([]);
         try {
             if (!selectedFile) {
                 alert('Please upload a file');
                 return;
             }
 
+            let messages: string[] = [];
+
             if (isUpdate) {
-                const messages = await PostMutationQuery(appContext, client, true, selectedFile, parsedCsvData);
-                console.log(messages);
-                setErrors(errors);
+                messages = await PostMutationQuery(appContext, client, true, selectedFile, parsedCsvData);
             } else if (isCreate) {
-                const messages = await PostMutationQuery(appContext, client, false, selectedFile, parsedCsvData);
-                console.log(messages);
+                messages = await PostMutationQuery(appContext, client, false, selectedFile, parsedCsvData);
+            }
+
+            console.log(messages);
+
+            if (messages.length > 0 && messages[0].startsWith("Success")) {
+                setSuccess(true);
+                setSuccessMessage(messages[0]);
+
+                if (messages.length > 1) {
+                    setErrors(messages.slice(1))
+                }
+            } else {
                 setErrors(messages);
             }
 
@@ -181,12 +110,6 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                     </Stack>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <p className={errors.length > 1 ? 'errors' : ''}>
-                        {errors.map((message, index) => (
-                            <span key={index}>{message}</span>
-                        ))}
-                    </p>
-
                     <div className="grid w-full max-w-sm items-center gap-1.5">
                         <div className="flex justify-between gap-4">
                             <Input
@@ -246,6 +169,28 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                             </label>
                         </div>
                     </div>
+
+                    {success &&
+                        <Alert status="success">
+                            <AlertIcon />
+                            <AlertDescription>{successMessage}</AlertDescription>
+                        </Alert>
+                    }
+                    {errors && errors.length > 0 &&
+                        <Alert status="error">
+                            <AlertIcon />
+                            <AlertDescription>
+                                <ul>
+                                    {errors?.map((item, index) => (
+                                        <li key={index}>
+                                            {item}
+                                        </li>
+
+                                    ))}
+                                </ul>
+                            </AlertDescription>
+                        </Alert>
+                    }
 
                     <Alert>
                         <AlertDescription>
