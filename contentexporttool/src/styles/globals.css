@@ -192,7 +192,7 @@ button {
   cursor: pointer;
 }
 
-.content-tree .inner {
+.modal .inner {
   position: fixed;
   background: white;
   left: 30%;
@@ -202,8 +202,11 @@ button {
   border: 1px solid #eee;
   border-radius: 8px;
   width: 50%;
-  height: 50%;
   padding: 8px;
+}
+
+.content-tree .inner {
+  height: 50%;
 }
 
 .browse-box,
@@ -215,7 +218,7 @@ button {
   padding: 4px 12px;
 }
 
-.content-tree {
+.modal {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -226,7 +229,7 @@ button {
   display: none;
 }
 
-.content-tree.open {
+.modal.open {
   display: block;
 }
 

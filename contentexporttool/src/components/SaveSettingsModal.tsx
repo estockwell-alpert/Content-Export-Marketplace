@@ -1,28 +1,29 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 'use client';
 import { ISettings } from '@/models/ISettings';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/ui/dialog';
 import { FormField, FormItem, FormMessage } from '@/ui/form';
-import { FormLabel, FormControl, Input, Button } from '@chakra-ui/react';
+import { FormLabel, FormControl, Input, Button, Textarea, Card, CardHeader, Heading, CardFooter, CardBody, Stack, Wrap, Alert, AlertDescription, AlertIcon } from '@chakra-ui/react';
 import { AlertDialog } from '@radix-ui/react-alert-dialog';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 
 const formSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
-  });
+  name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
+});
 type FormValues = z.infer<typeof formSchema>;
 
 interface InstanceSettingsModalProps {
   open: boolean;
+  emptySettings: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: Omit<ISettings, 'id' | 'createdAt'>) => void;
+  onSubmit: (saveName: string) => void;
 }
 
-export const SaveSettingsModal = ({ open, onOpenChange, onSubmit }: InstanceSettingsModalProps) => {
+export const SaveSettingsModal = ({ open, onOpenChange, onSubmit, emptySettings }: InstanceSettingsModalProps) => {
 
-
+  const [saveName, setSaveName] = useState<string>();
   const [savedSettings, setSavedSettings] = useState<ISettings[]>([]);
   const [showOverwrite, setShowOverwrite] = useState<boolean>(false);
 
@@ -39,80 +40,90 @@ export const SaveSettingsModal = ({ open, onOpenChange, onSubmit }: InstanceSett
   }, []);
 
   // Add this line to watch the instanceType field
-  const handleSubmit = (formData: any) => {
+  const handleSubmit = () => {
     setShowOverwrite(false);
-    
-    const name = formData.get("name");
 
-    const setting = savedSettings.find((setting) => setting.name === name);
+    const setting = savedSettings.find((setting) => setting.name === saveName);
 
     if (setting && !showOverwrite) {
       setShowOverwrite(true);
     } else {
-        const values: FormValues = {
-            name: name
-        }
-      onSubmit(values);
-      alert('Saved!');
+      onSubmit(saveName ?? "");
+      setSaveName('');
     }
   };
 
   const cancelSave = () => {
     setShowOverwrite(false);
     onOpenChange(false);
+    setSaveName('');
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>Save Settings</DialogTitle>
-        </DialogHeader>
+    <>
+      <div id="save-settings" className={'save-settings modal ' + (open ? 'open' : '')}>
+        <div className="inner">
+          <Card>
 
-          <form action={handleSubmit} className="space-y-6">
-            <FormField
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Whitepaper Export" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <CardBody>
+              <Stack spacing="4">
+                <Heading>Save Settings</Heading>
+                <label>Enter a name for the settings</label>
+                <Input
+                  value={saveName}
+                  aria-label="Enter a name for the settings"
+                  type="text"
+                  onChange={(e) => setSaveName(e.target.value)}
+                  placeholder="e.g. Whitepapers Export"
+                  className={'font-mono text-sm '}
+                />
 
-            {!showOverwrite ? (
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    cancelSave();
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">Save Settings</Button>
-              </DialogFooter>
-            ) : (
-              <DialogFooter>
-                <AlertDialog>Settings with this name already exist! Do you want to overwrite?</AlertDialog>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    cancelSave();
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">Yes, Overwrite</Button>
-              </DialogFooter>
-            )}
-          </form>
-      </DialogContent>
-    </Dialog>
+                {emptySettings && <Alert status="error">
+                  <AlertIcon />
+                  <AlertDescription>You haven&apos;t entered any settings. Are you sure you want to save empty settings?</AlertDescription>
+                </Alert>}
+
+                {!showOverwrite ? (
+                  <Wrap align="center">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        cancelSave();
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button disabled={saveName === null || saveName === ""} onClick={handleSubmit}>Save Settings</Button>
+                  </Wrap>
+                ) : (
+                  <>
+
+                    <Alert status="warning">
+                      <AlertIcon />
+                      <AlertDescription>Settings with this name already exist! Do you want to overwrite?</AlertDescription>
+                    </Alert>
+                    <Stack spacing="6">
+                      <Wrap align="center">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            cancelSave();
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button colorScheme="warning" type="submit">Yes, Overwrite</Button>
+                      </Wrap>
+                    </Stack>
+                  </>
+                )}
+              </Stack>
+            </CardBody>
+          </Card>
+        </div>
+      </div>
+    </>
   );
 };

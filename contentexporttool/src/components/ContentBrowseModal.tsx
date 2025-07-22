@@ -51,7 +51,7 @@ export const ContentBrowseModal: FC<ContentBrowseModalProps> = ({
 
   return (
     <>
-      <div id="content-tree" className={'content-tree ' + (browseContentOpen ? 'open' : '')}>
+      <div id="content-tree" className={'content-tree modal ' + (browseContentOpen ? 'open' : '')}>
         <div className="inner">
           <div className="browse-box">
             <ul>

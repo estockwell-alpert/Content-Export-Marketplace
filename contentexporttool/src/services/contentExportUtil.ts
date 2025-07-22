@@ -152,6 +152,14 @@ export const GenerateContentExport = async (
   console.log(csvString);
 
   // DOWNLOAD WON'T WORK UNTIL SITECORE UPDATES SANDBOX PERMISSION
+  // remove previous button
+  const btns = document.getElementsByClassName("downloadBtn");
+  if (btns && btns.length > 0) {
+    for (let i = 0; i < btns.length; i++) {
+      btns[i].remove();
+    }
+  }
+  // add new button
   const element = document.createElement('a');
   element.classList.add('downloadBtn');
   const file = new Blob([csvString], { type: 'text/csv' });

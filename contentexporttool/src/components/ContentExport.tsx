@@ -3,14 +3,13 @@ import { IContentNode } from "@/models/IContentNode";
 import { ISettings } from "@/models/ISettings";
 import { GenerateContentExport, GetTemplateSchema } from "@/services/contentExportUtil";
 import { convertStringToGuid, validateGuid } from "@/utils/helpers";
-import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Icon } from "@chakra-ui/react";
+import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap } from "@chakra-ui/react";
 import { ChangeEvent, FC, useEffect, useState } from "react";
 import { Root, createRoot } from "react-dom/client";
 import { ContentBrowseModal } from "./ContentBrowseModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 import { SaveSettingsModal } from "./SaveSettingsModal";
-import { mdiBookOpenPageVariantOutline } from "@mdi/js";
 
 interface ExportToolProps {
   appContext: ApplicationContext | null,
@@ -42,6 +41,23 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
   const [currentTemplateSelections, setCurrentTemplateSelections] = useState<any[]>([]);
 
   const sitecoreRootId = '{11111111-1111-1111-1111-111111111111}-root';
+
+  const emptySettings =
+    !startItem &&
+    !templates &&
+    !fields &&
+    !languages &&
+    !createdDate &&
+    !createdBy &&
+    !updatedDate &&
+    !updatedBy &&
+    !includeTemplate &&
+    !includeLang &&
+    !convertGuids;
+
+  console.log("Saved settings:");
+  console.log(savedSettings);
+
 
   const clearStartItem = () => {
     setStartItem('');
@@ -239,9 +255,9 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
     resetTree();
   }, [resetTree]);
 
-  const handleSaveSettings = (newSettings: Omit<ISettings, 'id'>) => {
+  const handleSaveSettings = (saveName: string) => {
     const settings: ISettings = {
-      ...newSettings,
+      name: saveName,
       id: crypto.randomUUID(),
       startItem: startItem ?? '',
       templates: templates ?? '',
@@ -257,7 +273,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
     };
 
     // check if setting with name already exists
-    const filteredSettings = savedSettings.filter((settings) => settings.name !== newSettings.name);
+    const filteredSettings = savedSettings.filter((settings) => settings.name !== saveName);
 
     // add
     const updatedSavedSettings = [...filteredSettings, settings];
@@ -326,10 +342,11 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
           <div className="container">
             <div className="row">
               <div className="space-y-4">
-                <h2 className="text-lg font-semibold">Saved Settings</h2>
 
                 {savedSettings && savedSettings.length > 0 && (
                   <>
+                    <h2 className="text-lg font-semibold">Saved Settings</h2>
+
                     <div className="flex flex-col space-y-4">
                       <Select onValueChange={handleSelectSettings}>
                         <SelectTrigger>
@@ -357,7 +374,6 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
           <Stack spacing={2}>
             <Heading >Export Content</Heading >
             <p>Export content from your Sitecore instance</p>
-            <a target="_blank" href="https://github.com/estockwell-alpert/Content-Export-Marketplace/blob/main/README.md#using-the-application"><Icon><path d={mdiBookOpenPageVariantOutline}></path></Icon> Documentation</a>
 
             <div className="">
               <Stack spacing="6">
@@ -627,7 +643,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
             </div>
           </Stack>
 
-          <SaveSettingsModal open={isModalOpen} onOpenChange={setIsModalOpen} onSubmit={handleSaveSettings} />
+          <SaveSettingsModal open={isModalOpen} emptySettings={emptySettings} onOpenChange={setIsModalOpen} onSubmit={handleSaveSettings} />
         </CardBody>
       </Card>
     </>

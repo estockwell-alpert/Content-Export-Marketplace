@@ -177,7 +177,6 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                         <p>
                             Import content from CSV files into your Sitecore instance <br />
                         </p>
-                        <a target="_blank" href="https://github.com/estockwell-alpert/Content-Export-Marketplace/blob/main/README.md#using-the-application"><Icon><path d={mdiBookOpenPageVariantOutline}></path></Icon> Documentation</a>
 
                     </Stack>
                 </CardHeader>
