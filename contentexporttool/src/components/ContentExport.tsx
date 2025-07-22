@@ -3,11 +3,10 @@ import { IContentNode } from "@/models/IContentNode";
 import { ISettings } from "@/models/ISettings";
 import { GenerateContentExport, GetTemplateSchema } from "@/services/contentExportUtil";
 import { convertStringToGuid, validateGuid } from "@/utils/helpers";
-import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap } from "@chakra-ui/react";
+import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Select } from "@chakra-ui/react";
 import { ChangeEvent, FC, useEffect, useState } from "react";
 import { Root, createRoot } from "react-dom/client";
 import { ContentBrowseModal } from "./ContentBrowseModal";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 import { SaveSettingsModal } from "./SaveSettingsModal";
 
@@ -17,6 +16,7 @@ interface ExportToolProps {
 }
 
 export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
+  const [selectedSettingIndex, setSelectedSettingIndex] = useState<number>(0);
   const [startItem, setStartItem] = useState<string>('');
   const [templatesStartItem, setTemplatesStartItem] = useState<string>();
   const [templates, setTemplates] = useState<string>('');
@@ -55,10 +55,6 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
     !includeLang &&
     !convertGuids;
 
-  console.log("Saved settings:");
-  console.log(savedSettings);
-
-
   const clearStartItem = () => {
     setStartItem('');
     setCurrentSelections([]);
@@ -89,7 +85,6 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
   };
 
   const clearAll = () => {
-    setSavedSettings([]);
     setStartItem('');
     setTemplates('');
     setTemplatesStartItem('');
@@ -280,15 +275,20 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
 
     setSavedSettings(updatedSavedSettings);
     localStorage.setItem('settings', JSON.stringify(updatedSavedSettings));
-
-    setIsModalOpen(false);
   };
 
-  const handleSelectSettings = (value: string) => {
-    const setting = savedSettings.find((setting) => setting.name === value);
+  const handleSelectSettings = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedSettingIndex(e.target.selectedIndex);
+
+    if (e.target.selectedIndex === 0) {
+      clearAll();
+      return;
+    }
+
+    const setting = savedSettings.find((setting) => setting.name === e.target.value);
 
     if (!setting) {
-      alert("Something went wrong, couldn't find settings");
+      console.log("Something went wrong, couldn't find settings");
       return;
     }
 
@@ -338,46 +338,16 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
 
 
       <Card>
-        <div className="space-y-4">
-          <div className="container">
-            <div className="row">
-              <div className="space-y-4">
-
-                {savedSettings && savedSettings.length > 0 && (
-                  <>
-                    <h2 className="text-lg font-semibold">Saved Settings</h2>
-
-                    <div className="flex flex-col space-y-4">
-                      <Select onValueChange={handleSelectSettings}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a Saved Configuration" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {savedSettings.map((settings) => (
-                            <SelectItem key={settings.id} value={settings.name}>
-                              {settings.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <Stack spacing={2}>
+        <CardHeader className="flex items-center">
+          <Stack spacing={2} className="grow">
             <Heading >Export Content</Heading >
             <p>Export content from your Sitecore instance</p>
 
             <div className="">
               <Stack spacing="6">
                 <Wrap align="center">
+
+
                   <Button size="sm" onClick={runExport}>
                     Run Export
                   </Button>
@@ -391,7 +361,25 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
               </Stack>
             </div>
           </Stack>
+          {savedSettings && savedSettings.length > 0 && (
+            <Stack>
+              <Card variant="filled" className="rounded-sm border bg-card p-6">
+                <Stack spacing='2'>
+                  <Heading size="lg">Saved Settings</Heading >
+                  <Select className={selectedSettingIndex === 0 ? "unselected" : ""} onChange={handleSelectSettings}>
+                    <option value="" key="0">-- Select a saved configuration --</option>
+                    {savedSettings.map((settings) => (
+                      <option key={settings.id} value={settings.name}>
+                        {settings.name}
+                      </option>
+                    ))}
+                  </Select>
+                </Stack>
+              </Card>
+            </Stack>
+          )}
         </CardHeader>
+
         <CardBody className="space-y-6">
           <Stack spacing="4">
             <Card variant="filled" className="rounded-sm border bg-card p-6">
@@ -645,7 +633,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
 
           <SaveSettingsModal open={isModalOpen} emptySettings={emptySettings} onOpenChange={setIsModalOpen} onSubmit={handleSaveSettings} />
         </CardBody>
-      </Card>
+      </Card >
     </>
   );
 };

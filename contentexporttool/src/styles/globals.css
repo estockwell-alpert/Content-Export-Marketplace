@@ -286,6 +286,10 @@ a {
   display: flex;
 }
 
+.grow {
+  flex-grow: 1;
+}
+
 .items-center {
   align-items: center;
 }
@@ -666,4 +670,16 @@ a {
     display: inline-block;
     margin: 0 auto;
     left: 50%;
+}
+
+select.unselected {
+    color: var(--colors-neutral-color-600);
+}
+
+select option {
+  color: black;
+
+    &:first-child {
+      color: var(--colors-neutral-color-600);
+  }
 }

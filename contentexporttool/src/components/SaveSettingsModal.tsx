@@ -26,6 +26,7 @@ export const SaveSettingsModal = ({ open, onOpenChange, onSubmit, emptySettings 
   const [saveName, setSaveName] = useState<string>();
   const [savedSettings, setSavedSettings] = useState<ISettings[]>([]);
   const [showOverwrite, setShowOverwrite] = useState<boolean>(false);
+  const [saved, setSaved] = useState<boolean>(false);
 
   useEffect(() => {
     try {
@@ -50,6 +51,7 @@ export const SaveSettingsModal = ({ open, onOpenChange, onSubmit, emptySettings 
     } else {
       onSubmit(saveName ?? "");
       setSaveName('');
+      setSaved(true);
     }
   };
 
@@ -57,6 +59,7 @@ export const SaveSettingsModal = ({ open, onOpenChange, onSubmit, emptySettings 
     setShowOverwrite(false);
     onOpenChange(false);
     setSaveName('');
+    setSaved(false);
   };
 
   return (
@@ -68,57 +71,84 @@ export const SaveSettingsModal = ({ open, onOpenChange, onSubmit, emptySettings 
             <CardBody>
               <Stack spacing="4">
                 <Heading>Save Settings</Heading>
-                <label>Enter a name for the settings</label>
-                <Input
-                  value={saveName}
-                  aria-label="Enter a name for the settings"
-                  type="text"
-                  onChange={(e) => setSaveName(e.target.value)}
-                  placeholder="e.g. Whitepapers Export"
-                  className={'font-mono text-sm '}
-                />
 
-                {emptySettings && <Alert status="error">
-                  <AlertIcon />
-                  <AlertDescription>You haven&apos;t entered any settings. Are you sure you want to save empty settings?</AlertDescription>
-                </Alert>}
 
-                {!showOverwrite ? (
+                {saved ? (
                   <Wrap align="center">
+                    <Alert status="success">
+
+                      <AlertIcon />
+                      <AlertDescription>Your settings have been saved!</AlertDescription>
+
+                    </Alert>
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="solid"
                       onClick={() => {
                         cancelSave();
                       }}
                     >
-                      Cancel
+                      Close
                     </Button>
-                    <Button disabled={saveName === null || saveName === ""} onClick={handleSubmit}>Save Settings</Button>
                   </Wrap>
-                ) : (
-                  <>
+                ) :
+                  (
+                    <>
+                      <label>Enter a name for the settings</label>
+                      <Input
+                        value={saveName}
+                        aria-label="Enter a name for the settings"
+                        type="text"
+                        onChange={(e) => setSaveName(e.target.value)}
+                        placeholder="e.g. Whitepapers Export"
+                        className={'font-mono text-sm '}
+                      />
 
-                    <Alert status="warning">
-                      <AlertIcon />
-                      <AlertDescription>Settings with this name already exist! Do you want to overwrite?</AlertDescription>
-                    </Alert>
-                    <Stack spacing="6">
-                      <Wrap align="center">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => {
-                            cancelSave();
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button colorScheme="warning" type="submit">Yes, Overwrite</Button>
-                      </Wrap>
-                    </Stack>
-                  </>
-                )}
+                      {emptySettings &&
+                        <Alert status="error">
+                          <AlertIcon />
+                          <AlertDescription>You haven&apos;t entered any settings. Are you sure you want to save empty settings?</AlertDescription>
+                        </Alert>}
+                      {!showOverwrite ? (
+                        <Wrap align="center">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                              cancelSave();
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                          <Button disabled={saveName === null || saveName === ""} onClick={handleSubmit}>Save Settings</Button>
+                        </Wrap>
+                      ) : (
+                        <>
+
+                          <Alert status="warning">
+                            <AlertIcon />
+                            <AlertDescription>Settings with this name already exist! Do you want to overwrite?</AlertDescription>
+                          </Alert>
+                          <Stack spacing="6">
+                            <Wrap align="center">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  cancelSave();
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                              <Button colorScheme="warning" type="submit">Yes, Overwrite</Button>
+                            </Wrap>
+                          </Stack>
+                        </>
+                      )}
+                    </>
+                  )
+                }
+
               </Stack>
             </CardBody>
           </Card>
