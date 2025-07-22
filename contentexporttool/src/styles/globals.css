@@ -652,3 +652,15 @@ a {
 .hidden {
   display: none;
 }
+
+.downloadBtn {
+  background: white;
+    font-weight: bold;
+    padding: 20px;
+    border: 2px solid red;
+    position: relative;
+    z-index: 999;
+    display: inline-block;
+    margin: 0 auto;
+    left: 50%;
+}

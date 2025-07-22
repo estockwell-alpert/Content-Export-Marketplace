@@ -156,11 +156,12 @@ export const GenerateContentExport = async (
   element.classList.add('downloadBtn');
   const file = new Blob([csvString], { type: 'text/csv' });
   element.href = URL.createObjectURL(file);
+  element.innerHTML = "DOWNLOAD"
   element.download = 'ContentExport.csv';
   document.body.appendChild(element); // Required for this to work in FireFox
   element.click();
   // remove button after download
-  element.remove();
+  //element.remove();
 
   if (loadingModal) {
     loadingModal.style.display = 'none';
