@@ -13,16 +13,18 @@ import { FieldBrowseModal } from "./FieldBrowseModal";
 
 interface ExportToolProps {
   appContext: ApplicationContext | null,
-  client: ClientSDK | null
+  client: ClientSDK | null,
+  siteLanguages: string[]
 }
 
-export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
+export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLanguages }) => {
   const [selectedSettingIndex, setSelectedSettingIndex] = useState<number>(0);
   const [startItem, setStartItem] = useState<string>('');
   const [templatesStartItem, setTemplatesStartItem] = useState<string>();
   const [templates, setTemplates] = useState<string>('');
   const [fields, setFields] = useState<string>();
   const [languages, setLanguages] = useState<string>();
+  const [selectedLanguageIndex, setSelectedLanguageIndex] = useState<number>();
   const [createdDate, setCreatedDate] = useState<boolean>();
   const [createdBy, setCreatedBy] = useState<boolean>();
   const [updatedDate, setUpdatedDate] = useState<boolean>();
@@ -81,9 +83,6 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
   };
   const handleFields = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setFields(event.target.value);
-  };
-  const handleLanguages = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setLanguages(event.target.value);
   };
 
   const clearAll = () => {
@@ -248,6 +247,11 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
     setSavedSettings(updatedSavedSettings);
     localStorage.setItem('settings', JSON.stringify(updatedSavedSettings));
   };
+
+  const handleSetLanguage = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedSettingIndex(e.target.selectedIndex);
+    setLanguages(e.target.value);
+  }
 
   const handleSelectSettings = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedSettingIndex(e.target.selectedIndex);
@@ -430,18 +434,21 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client }) => {
                 <Stack spacing='2'>
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium">Language</label>
+
                     <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => setLanguages('')}>
+                      <Button variant="ghost" size="sm" onClick={() => { setLanguages(''); setSelectedLanguageIndex(0) }}>
                         Clear
                       </Button>
                     </div>
                   </div>
-                  <Textarea
-                    value={languages}
-                    onChange={handleLanguages}
-                    placeholder="e.g. en, es-MX"
-                    className="text-sm"
-                  />
+                  <Select className={selectedLanguageIndex === 0 ? "unselected" : ""} value={languages} onChange={handleSetLanguage}>
+                    <option value="" key="0">--</option>
+                    {siteLanguages.sort().map((lang, index) => (
+                      <option key={index} value={lang}>
+                        {lang}
+                      </option>
+                    ))}
+                  </Select>
                 </Stack>
               </Stack>
             </Card>

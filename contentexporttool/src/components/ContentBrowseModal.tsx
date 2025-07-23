@@ -82,7 +82,7 @@ export const ContentBrowseModal: FC<ContentBrowseModalProps> = ({
                 <ul>
                   {currentSelections && (
                     <li>
-                      <b>selected:</b>
+                      <b>selected:</b> (double click to remove)
                     </li>
                   )}
                   {currentSelections &&

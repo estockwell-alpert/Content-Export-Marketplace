@@ -20,6 +20,14 @@ export const GenerateContentExport = async (
 
   includeLang = true; // since Auth export exports all languages by default, just always show the column. Check if Edge does all langs by default too
 
+  // remove previous button
+  const btns = document.getElementsByClassName("downloadBtn");
+  if (btns && btns.length > 0) {
+    for (let i = 0; i < btns.length; i++) {
+      btns[i].remove();
+    }
+  }
+
   if (loadingModal) {
     loadingModal.style.display = 'block';
   }
@@ -151,13 +159,6 @@ export const GenerateContentExport = async (
   console.log(csvString);
 
   // DOWNLOAD WON'T WORK UNTIL SITECORE UPDATES SANDBOX PERMISSION
-  // remove previous button
-  const btns = document.getElementsByClassName("downloadBtn");
-  if (btns && btns.length > 0) {
-    for (let i = 0; i < btns.length; i++) {
-      btns[i].remove();
-    }
-  }
   // add new button
   const element = document.createElement('a');
   element.classList.add('downloadBtn');
@@ -174,6 +175,26 @@ export const GenerateContentExport = async (
   if (loadingModal) {
     loadingModal.style.display = 'none';
   }
+};
+
+export const GetLanguages = async (
+  appContext: ApplicationContext | null,
+  client: ClientSDK | null): Promise<string[]> => {
+
+  // generate query
+  const languagesNodeId = "{64C4F646-A3FA-4205-B98E-4DE2C609B60F}";
+  const languageTemplateId = "{F68F13A6-3395-426A-B9A1-FA2DC60D94EB}";
+  const querystring = GetSearchQuery(languagesNodeId, languageTemplateId);
+
+  // make GQL request
+  const response = await makeGraphQLQuery(appContext, client, querystring);
+  const results = response.data.data.search.results;
+
+  console.log(results);
+
+  return results
+    ?.map((result: any) => result.innerItem?.name);
+
 };
 
 export const GetItemChildren = async (

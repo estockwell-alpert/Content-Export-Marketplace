@@ -6,11 +6,13 @@ import { ChakraProvider, Spinner } from "@chakra-ui/react";
 import { ExportTool } from "@/components/ContentExport";
 import { TabsContent, TabsList, TabsTrigger, Tabs } from "@/ui/tabs";
 import { ImportTool } from "@/components/ContentImport";
+import { GetLanguages } from "@/services/contentExportUtil";
 
 export default function Home() {
 
   const { client, error, isInitialized } = useMarketplaceClient();
   const [applicationContext, setApplicationContext] = useState({ id: '', url: '' });
+  const [languages, setLanguages] = useState<string[]>();
 
   useEffect(() => {
     if (!error && isInitialized && client) {
@@ -21,6 +23,27 @@ export default function Home() {
           console.log("Success retrieving application.context:", appContextResponse.data);
           if (appContextResponse?.data) {
             setApplicationContext(appContextResponse.data);
+
+            const getLanguagesAsync = async () => {
+              if (!appContextResponse.data) return;
+              const availableLanguages = await GetLanguages(appContextResponse.data, client);
+              if (availableLanguages) {
+                console.log(availableLanguages);
+                setLanguages(availableLanguages);
+                localStorage.setItem('languages', JSON.stringify(availableLanguages));
+              }
+            }
+
+            const languages = localStorage.getItem('languages');
+            if (languages) {
+              const parsedLanguages = JSON.parse(languages) as string[];
+              setLanguages(parsedLanguages);
+            } else {
+              getLanguagesAsync()
+                // make sure to catch any error
+                .catch(console.error);
+            }
+
           } else {
             setApplicationContext({ id: '', url: '' });
             console.warn('Application context data not found in response:', appContextResponse);
@@ -61,7 +84,7 @@ export default function Home() {
               </TabsList>
 
               <TabsContent value="export">
-                <ExportTool appContext={applicationContext} client={client} />
+                <ExportTool appContext={applicationContext} client={client} siteLanguages={languages ?? []} />
               </TabsContent>
               <TabsContent value="import">
                 <ImportTool appContext={applicationContext} client={client} />
