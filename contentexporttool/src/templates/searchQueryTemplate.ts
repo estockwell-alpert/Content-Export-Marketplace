@@ -94,6 +94,14 @@ export const AuthoringSearchQueryTemplate = gql`
   }
 `;
 
+export const AllFieldsFragment = gql`
+fields(ownFields: true, excludeStandardFields: true) {
+    nodes {
+        name
+        value
+    }
+}`;
+
 export const AuthoringTemplatesFragment = gql`{ criteriaType: SEARCH, field: "_template", value: "GUID" }`;
 export const AuthoringPathFragment = gql`{ criteriaType: SEARCH, field: "_path", value: "GUID" }`;
 export const AuthoringLangFragment = gql`{ criteriaType: SEARCH, field: "_language", value: "CODE" }`;

@@ -1,4 +1,4 @@
-import { EdgeItemQueryTemplate, AuthoringPathFragment, AuthoringTemplatesFragment, AuthoringLangFragment, AuthoringSearchQueryTemplate, EdgeLangFragment, EdgeSearchQueryTemplate, SchemaQueryTemplate } from "@/templates/searchQueryTemplate";
+import { EdgeItemQueryTemplate, AuthoringPathFragment, AuthoringTemplatesFragment, AuthoringLangFragment, AuthoringSearchQueryTemplate, EdgeLangFragment, EdgeSearchQueryTemplate, SchemaQueryTemplate, AllFieldsFragment } from "@/templates/searchQueryTemplate";
 
 export const GetEdgeItemQuery = (itemId: string, language: string): string => {
   const query = EdgeItemQueryTemplate.replace('[ID]', itemId).replace('[LANG]', language);
@@ -11,7 +11,8 @@ export const GetSearchQuery = (
   templates?: string,
   fields?: string,
   languages?: string,
-  cursor?: string
+  cursor?: string,
+  allFields?: boolean
 ): string => {
   let pathFragment = '';
   if (startItems) {
@@ -45,7 +46,7 @@ export const GetSearchQuery = (
     }
   }
 
-  const fieldsFragment = getFieldsFragment(fields);
+  const fieldsFragment = allFields ? AllFieldsFragment : getFieldsFragment(fields);
 
   const query = AuthoringSearchQueryTemplate.replace('pathsFragment', pathFragment)
     .replace('templatesFragment', templateFragment)

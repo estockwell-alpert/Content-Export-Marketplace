@@ -13,7 +13,8 @@ export const GenerateContentExport = async (
   languages?: string,
   includeTemplate?: boolean,
   includeLang?: boolean,
-  convertGuids?: boolean
+  convertGuids?: boolean,
+  allFields?: boolean
 ) => {
   // show loading modal
   const loadingModal = document.getElementById('loading-modal');
@@ -39,7 +40,7 @@ export const GenerateContentExport = async (
   //let calls = 0;
 
   // generate query
-  const querystring = GetSearchQuery(startItem, templates, fields, languages, cursor);
+  const querystring = GetSearchQuery(startItem, templates, fields, languages, cursor, allFields);
 
   // make GQL request
   const response = await makeGraphQLQuery(appContext, client, querystring);
@@ -48,10 +49,11 @@ export const GenerateContentExport = async (
   console.log(results);
 
   // generate CSV with results
-  const csvData = [];
+  const csvData: string[] = [];
 
   // first row of CSV
-  const fieldStrings = fields?.split(',');
+
+  const fieldNames = fields?.split(',') ?? [];
   let headerRow = 'Item Path,Name,ID,';
   if (includeTemplate) {
     headerRow += 'Template,';
@@ -59,18 +61,40 @@ export const GenerateContentExport = async (
   if (includeLang) {
     headerRow += 'Language,';
   }
-  if (fieldStrings) {
-    for (let i = 0; i < fieldStrings.length; i++) {
-      if (fieldStrings[i].trim() === '') {
+
+  // get all fields first
+  if (allFields) {
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i]?.innerItem;
+      if (!result) continue;
+
+      const resultFields = result?.fields?.nodes;
+      if (resultFields && resultFields.length > 0) {
+        for (let z = 0; z < resultFields.length; z++) {
+          const resultField = resultFields[z];
+
+          const field = resultField.name;
+
+          if (fieldNames.indexOf(field) === -1) {
+            fieldNames.push(field);
+          }
+        }
+      }
+    }
+  }
+
+  // add all field names to the header row
+  if (fieldNames) {
+    for (let i = 0; i < fieldNames.length; i++) {
+      if (fieldNames[i].trim() === '') {
         continue;
       }
 
-      headerRow += fieldStrings[i].trim() + ',';
+      headerRow += fieldNames[i].trim() + ',';
     }
   }
+  // insert headerRow at start of csv
   csvData.push(headerRow);
-
-  const guidFieldDictionary: { [id: string]: [name: string] } = {};
 
   for (let i = 0; i < results.length; i++) {
     let result = results[i];
@@ -97,54 +121,33 @@ export const GenerateContentExport = async (
       resultRow += result.language?.name + ',';
     }
 
-    if (fieldStrings) {
-      for (let j = 0; j < fieldStrings.length; j++) {
-        const field = fieldStrings[j].trim().replaceAll(' ', '').replaceAll('__', '');
+    if (allFields) {
+      const resultFields = result?.fields?.nodes;
+      // iterate through all fields
+      for (let f = 0; f < fieldNames.length; f++) {
+        const fieldName = fieldNames[f];
+        let rawValue = "";
+        if (resultFields?.some((obj: any) => obj?.name === fieldName)) {
+          const field = resultFields.filter(function (obj: any) { return obj.name === fieldName; })[0];
+          rawValue = field?.value;
+        } else {
+          rawValue = "n/a";
+        }
 
-        if (fieldStrings[j].trim() === '') {
+        const fieldValue = await ProcessFieldValue(rawValue, convertGuids ?? false, result, allFields ?? false, appContext, client);
+        resultRow += (fieldValue ?? 'n/a') + ',';
+      }
+    } else if (fieldNames) {
+      for (let j = 0; j < fieldNames.length; j++) {
+        const field = fieldNames[j].trim().replaceAll(' ', '').replaceAll('__', '');
+
+        if (fieldNames[j].trim() === '') {
           continue;
         }
 
-        let fieldValue = result[field]?.value ?? 'n/a';
+        const rawValue = result[field]?.value ?? 'n/a';
+        const fieldValue = await ProcessFieldValue(rawValue, convertGuids ?? false, result, allFields ?? false, appContext, client);
 
-        // check if field is guid/guids
-        if (convertGuids && fieldValue !== '' && validateMultiGuids(fieldValue)) {
-          console.log('Value is a guid; get the item name');
-
-          let convertedValue = '';
-          const guids = getGuids(fieldValue);
-          for (let g = 0; g < guids.length; g++) {
-            const guid = guids[g];
-            if (g > 0) {
-              convertedValue += '; ';
-            }
-            if (guidFieldDictionary[guid]) {
-              convertedValue += guidFieldDictionary[guid];
-            } else {
-              // generate query
-              const linkedItemsQueryString = GetSearchQuery(guid, '', '', result.language?.name ?? '', cursor);
-
-              // make GQL request
-              const linkedItemResults = await makeGraphQLQuery(appContext, client, linkedItemsQueryString);
-
-              let linkedItemResult = linkedItemResults;
-              linkedItemResult = linkedItemResults[0]?.innerItem;
-
-              const itemName = linkedItemResult?.name;
-              guidFieldDictionary[fieldValue] = itemName;
-
-              convertedValue += itemName;
-            }
-          }
-          fieldValue = convertedValue;
-        }
-
-
-        // double quote to escape commas
-        if (fieldValue.indexOf(',') > -1) {
-          const cleanFieldValue = fieldValue.replace(/[\n\r\t]/gm, '').replace(/"/g, '""');
-          fieldValue = '"' + cleanFieldValue + '"';
-        }
         resultRow += (fieldValue ?? 'n/a') + ',';
       }
     }
@@ -177,6 +180,56 @@ export const GenerateContentExport = async (
     loadingModal.style.display = 'none';
   }
 };
+
+export const ProcessFieldValue = async (
+  fieldValue: string,
+  convertGuids: boolean,
+  result: any,
+  allFields: boolean,
+  appContext: ApplicationContext | null,
+  client: ClientSDK | null) => {
+  // check if field is guid/guids
+  const guidFieldDictionary: { [id: string]: [name: string] } = {};
+
+  if (convertGuids && fieldValue !== '' && validateMultiGuids(fieldValue)) {
+    console.log('Value is a guid; get the item name');
+
+    let convertedValue = '';
+    const guids = getGuids(fieldValue);
+    for (let g = 0; g < guids.length; g++) {
+      const guid = guids[g];
+      if (g > 0) {
+        convertedValue += '; ';
+      }
+      if (guidFieldDictionary[guid]) {
+        convertedValue += guidFieldDictionary[guid];
+      } else {
+        // generate query
+        const linkedItemsQueryString = GetSearchQuery(guid, '', '', result.language?.name ?? '', '', allFields);
+
+        // make GQL request
+        const linkedItemResults = await makeGraphQLQuery(appContext, client, linkedItemsQueryString);
+
+        let linkedItemResult = linkedItemResults;
+        linkedItemResult = linkedItemResults[0]?.innerItem;
+
+        const itemName = linkedItemResult?.name;
+        guidFieldDictionary[fieldValue] = itemName;
+
+        convertedValue += itemName;
+      }
+    }
+    fieldValue = convertedValue;
+  }
+
+  // double quote to escape commas
+  if (fieldValue.indexOf(',') > -1) {
+    const cleanFieldValue = fieldValue.replace(/[\n\r\t]/gm, '').replace(/"/g, '""');
+    fieldValue = '"' + cleanFieldValue + '"';
+  }
+
+  return fieldValue;
+}
 
 export const GetLanguages = async (
   appContext: ApplicationContext | null,

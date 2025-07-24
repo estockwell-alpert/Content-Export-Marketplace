@@ -31,6 +31,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   const [updatedBy, setUpdatedBy] = useState<boolean>();
   const [convertGuids, setConvertGuids] = useState<boolean>();
   const [includeTemplate, setIncludeTemplate] = useState<boolean>();
+  const [allFields, setAllFields] = useState<boolean>();
   const [includeLang, setIncludeLang] = useState<boolean>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [savedSettings, setSavedSettings] = useState<ISettings[]>([]);
@@ -141,7 +142,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       languages,
       includeTemplate,
       includeLang,
-      convertGuids
+      convertGuids,
+      allFields
     );
   };
 
@@ -247,6 +249,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       createdDate: createdDate,
       updatedBy: updatedBy,
       updatedDate: updatedDate,
+      allFields: allFields
     };
 
     // check if setting with name already exists
@@ -290,6 +293,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     setUpdatedBy(setting.updatedBy);
     setUpdatedDate(setting.updatedDate);
     setConvertGuids(setting.convertGuids);
+    setAllFields(setting.allFields);
   };
 
   return (
@@ -493,6 +497,16 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                     </AlertDescription>
                   </Alert>
                 }
+
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id={`checkbox-template`}
+                    checked={allFields}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => setAllFields(event.target.checked === true)}
+                    className="mr-2"
+                  />
+                  <span className="flex-grow">Export all fields</span>
+                </div>
 
                 <div className="">
 
