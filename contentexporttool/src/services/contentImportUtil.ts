@@ -85,7 +85,7 @@ export const PostMutationQuery = async (
                 property === 'ID' ||
                 property === 'Name' ||
                 property === 'Language' ||
-                property === ''
+                /\s/g.test(property)
             ) {
                 continue;
             }
