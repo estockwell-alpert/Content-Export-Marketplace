@@ -79,13 +79,14 @@ export const PostMutationQuery = async (
         let fieldFragments = '';
         for (const property in row) {
             // skip core columns
+            const field = property.trim().toLowerCase();
             if (
-                property === 'Item Path' ||
-                property === 'Template' ||
-                property === 'ID' ||
-                property === 'Name' ||
-                property === 'Language' ||
-                /\s/g.test(property)
+                field === 'item path' ||
+                field === 'template' ||
+                field === 'id' ||
+                field === 'name' ||
+                field === 'language' ||
+                field === ""
             ) {
                 continue;
             }
@@ -97,12 +98,14 @@ export const PostMutationQuery = async (
                 continue;
             }
 
+            const cleanValue = value.replaceAll("\"", "\\\"");
+
             const fieldFragment =
                 `
           { name: "` +
-                property +
+                field +
                 `", value: "` +
-                value.replace('"', '&quot;') +
+                cleanValue +
                 `" }`;
 
             fieldFragments += fieldFragment;

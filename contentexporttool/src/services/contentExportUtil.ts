@@ -139,12 +139,13 @@ export const GenerateContentExport = async (
           fieldValue = convertedValue;
         }
 
-        let cleanFieldValue = fieldValue.replace(/[\n\r\t]/gm, '').replace(/"/g, '""');
+
         // double quote to escape commas
-        if (cleanFieldValue.indexOf(',') > -1) {
-          cleanFieldValue = '"' + cleanFieldValue + '"';
+        if (fieldValue.indexOf(',') > -1) {
+          const cleanFieldValue = fieldValue.replace(/[\n\r\t]/gm, '').replace(/"/g, '""');
+          fieldValue = '"' + cleanFieldValue + '"';
         }
-        resultRow += (cleanFieldValue ?? 'n/a') + ',';
+        resultRow += (fieldValue ?? 'n/a') + ',';
       }
     }
 
