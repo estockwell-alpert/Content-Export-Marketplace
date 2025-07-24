@@ -224,48 +224,54 @@ export const GetAvailableFields = async (
     return [];
   }
 
-  const fieldTemplateId = '{455A3E98-A627-4B40-8035-E683A0331AC7}';
+  const templateKeyFields = localStorage.getItem(templates);
+  if (templateKeyFields) {
+    const fields = JSON.parse(templateKeyFields) as string[];
+    return fields;
+  } else {
+    const fieldTemplateId = '{455A3E98-A627-4B40-8035-E683A0331AC7}';
 
-  const templateIds = templates?.split(',');
-  const baseTemplates: string[] = [];
-  const fields: string[] = [];
+    const templateIds = templates?.split(',');
+    const baseTemplates: string[] = [];
+    const fields: string[] = [];
 
-  // get all base templates
-  for (let i = 0; i < templateIds.length; i++) {
-    const baseTemplateIds = await GetBaseTemplateIds(appContext, client, templateIds[i], 0);
+    // get all base templates
+    for (let i = 0; i < templateIds.length; i++) {
+      const baseTemplateIds = await GetBaseTemplateIds(appContext, client, templateIds[i], 0);
 
-    for (let j = 0; j < baseTemplateIds.length; j++) {
-      if (!baseTemplates.includes(baseTemplateIds[j])) {
-        baseTemplates.push(baseTemplateIds[j]);
+      for (let j = 0; j < baseTemplateIds.length; j++) {
+        if (!baseTemplates.includes(baseTemplateIds[j])) {
+          baseTemplates.push(baseTemplateIds[j]);
+        }
       }
     }
-  }
 
-  console.log('BEGIN FIELD QUERIES');
+    console.log('BEGIN FIELD QUERIES');
 
-  if (baseTemplates.length === 0) return [];
-  console.log('Getting fields for ' + baseTemplates.join(", "));
-  const allFieldsQuery = GetSearchQuery(baseTemplates.join(","), fieldTemplateId);
+    if (baseTemplates.length === 0) return [];
+    console.log('Getting fields for ' + baseTemplates.join(", "));
+    const allFieldsQuery = GetSearchQuery(baseTemplates.join(","), fieldTemplateId);
 
-  const fieldsResponse = await makeGraphQLQuery(appContext, client, allFieldsQuery);
+    const fieldsResponse = await makeGraphQLQuery(appContext, client, allFieldsQuery);
 
-  console.log(fieldsResponse);
-  const fieldsJson = fieldsResponse?.data?.data?.search?.results;
-  //console.log(JSON.stringify(fieldsJson));
+    console.log(fieldsResponse);
+    const fieldsJson = fieldsResponse?.data?.data?.search?.results;
+    //console.log(JSON.stringify(fieldsJson));
 
-  for (let f = 0; f < fieldsJson.length; f++) {
-    const field = fieldsJson[f].innerItem;
+    for (let f = 0; f < fieldsJson.length; f++) {
+      const field = fieldsJson[f].innerItem;
 
-    console.log('');
-    console.log('Field ' + f + ': ' + field.name);
+      console.log('');
+      console.log('Field ' + f + ': ' + field.name);
 
-    if (!fields.includes(field.name)) {
-      fields.push(field.name);
+      if (!fields.includes(field.name)) {
+        fields.push(field.name);
+      }
     }
+
+    localStorage.setItem(templates, JSON.stringify(fields.sort()));
+    return fields.sort();
   }
-
-
-  return fields.sort();
 }
 
 export const GetBaseTemplateIds = async (

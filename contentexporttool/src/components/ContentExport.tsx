@@ -86,6 +86,13 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   };
 
   const clearAll = () => {
+    const btns = document.getElementsByClassName("downloadBtn");
+    if (btns && btns.length > 0) {
+      for (let i = 0; i < btns.length; i++) {
+        btns[i].remove();
+      }
+    }
+
     setStartItem('');
     setTemplates('');
     setTemplatesStartItem('');
@@ -102,6 +109,10 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     setErrorTemplates(false);
     setIncludeTemplate(false);
     setAvailableFields([]);
+
+    // browse modals
+    setCurrentSelections([]);
+    setCurrentTemplateSelections([]);
   };
 
   const runExport = async () => {
