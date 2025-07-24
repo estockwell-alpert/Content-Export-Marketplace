@@ -127,7 +127,8 @@ export const PostMutationQuery = async (
             if (results.data.errors) {
                 for (let j = 0; j < results.data.errors.length; j++) {
                     const error = results.data.errors[j];
-                    errors.push("Error on Line " + (i + 2) + ": " + error.message.replace(/[\r\n]+/gm, ' '));
+                    const csvItemPath = csvData[i]['Item Path'];
+                    errors.push("Error on Line " + (i + 2) + ": " + csvItemPath + " - " + error.message.replace(/[\r\n]+/gm, ' '));
                 }
             } else {
                 successfullQueries++;
