@@ -78,6 +78,7 @@ export const PostMutationQuery = async (
 
         let fieldFragments = '';
         for (const property in row) {
+            // skip core columns
             if (
                 property === 'Item Path' ||
                 property === 'Template' ||
@@ -90,6 +91,12 @@ export const PostMutationQuery = async (
             }
 
             const value = row[property];
+
+            // skip fields that don't exist
+            if (value.toLowerCase() === "n/a") {
+                continue;
+            }
+
             const fieldFragment =
                 `
           { name: "` +
