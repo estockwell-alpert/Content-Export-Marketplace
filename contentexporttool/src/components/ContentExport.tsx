@@ -310,7 +310,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       createdDate: createdDate,
       updatedBy: updatedBy,
       updatedDate: updatedDate,
-      allFields: allFields
+      allFieldsCheckbox: allFields
     };
 
     // check if setting with name already exists
@@ -355,7 +355,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     setUpdatedBy(setting.updatedBy);
     setUpdatedDate(setting.updatedDate);
     setConvertGuids(setting.convertGuids);
-    setAllFields(setting.allFields);
+    setAllFields(setting.allFieldsCheckbox);
   };
 
   return (

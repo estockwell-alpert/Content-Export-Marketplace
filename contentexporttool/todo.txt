@@ -1,5 +1,16 @@
-1. FIELD BROWSE - 
-Move this to a modal, rewrite to make better perforamnce and make sure spinner shows until fields are loaded
+GET ALL FIELDS - we don't need the complicated schema query, we can just use fields(ownFields) ✓
 
-2. IMPORT!
-- get Success message to show
+Does content export include the root item in the results? Make sure it does! ✓
+
+IMPORT FAILS ON NULL FIELDS - make it skip anything where value is N/A ✓ 
+
+Image Import doesn't work - figure this out ✓ 
+
+Clear out browse selections on Clear All  ✓ 
+
+On clear all, reset save settings dropdown ✓
+
+Import - CREATE message (change "updated" to "created") ✓
+
+Make button ribbon sticky ✓
+
