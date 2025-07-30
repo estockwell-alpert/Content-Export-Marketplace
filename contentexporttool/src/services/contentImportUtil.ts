@@ -156,7 +156,7 @@ export const PostMutationQuery = async (
     let messages: string[] = [];
 
     if (successfullQueries > 0) {
-        messages.push('Successfully updated ' + successfullQueries + ' item(s)');
+        messages.push('Successfully ' + (update ? 'updated' : 'created') + ' ' + successfullQueries + ' item(s)');
     }
 
     if (errors.length > 0) {

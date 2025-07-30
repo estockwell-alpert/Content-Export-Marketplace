@@ -19,6 +19,7 @@ interface ExportToolProps {
 
 export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLanguages }) => {
   const [selectedSettingIndex, setSelectedSettingIndex] = useState<number>(0);
+  const [selectedSettings, setSelectedSettings] = useState<string>('');
   const [startItem, setStartItem] = useState<string>('');
   const [templatesStartItem, setTemplatesStartItem] = useState<string>();
   const [templates, setTemplates] = useState<string>('');
@@ -114,6 +115,10 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     // browse modals
     setCurrentSelections([]);
     setCurrentTemplateSelections([]);
+
+    // dropdowns
+    setSelectedSettingIndex(0);
+    setSelectedSettings('');
   };
 
   const runExport = async () => {
@@ -269,6 +274,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
 
   const handleSelectSettings = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedSettingIndex(e.target.selectedIndex);
+    setSelectedSettings(e.target.value);
 
     if (e.target.selectedIndex === 0) {
       clearAll();
@@ -357,7 +363,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
               <Card variant="filled" className="rounded-sm border bg-card p-6">
                 <Stack spacing='2'>
                   <Heading size="lg">Saved Settings</Heading >
-                  <Select className={selectedSettingIndex === 0 ? "unselected" : ""} onChange={handleSelectSettings}>
+                  <Select className={selectedSettingIndex === 0 ? "unselected" : ""} value={selectedSettings} onChange={handleSelectSettings}>
                     <option value="" key="0">-- Select a saved configuration --</option>
                     {savedSettings.map((settings) => (
                       <option key={settings.id} value={settings.name}>
