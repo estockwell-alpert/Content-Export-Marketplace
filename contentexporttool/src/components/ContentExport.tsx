@@ -2,9 +2,9 @@
 import { IContentNode } from "@/models/IContentNode";
 import { ISettings } from "@/models/ISettings";
 import { GenerateContentExport, GetAvailableFields } from "@/services/contentExportUtil";
-import { convertStringToGuid, validateGuid } from "@/utils/helpers";
+import { convertStringToGuid, hasWindow, validateGuid } from "@/utils/helpers";
 import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Select } from "@chakra-ui/react";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from "react";
 import { Root, createRoot } from "react-dom/client";
 import { ContentBrowseModal } from "./ContentBrowseModal";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
@@ -45,6 +45,62 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   const [contentMainRoot, setContentMainRoot] = useState<Root>();
   const [currentSelections, setCurrentSelections] = useState<any[]>([]);
   const [currentTemplateSelections, setCurrentTemplateSelections] = useState<any[]>([]);
+  const [isSticky, setIsSticky] = useState(false);
+  const mainHeaderEl = useRef<HTMLDivElement>(null);
+  const stickyFooterEl = useRef<HTMLDivElement>(null);
+  const [navHeight, setNavHeight] = useState(0);
+
+  /**
+ * Make the nav stick to top of window if scrolled down
+ * far enough, and return nav to default state if not
+ * @returns null if elements aren't rendered
+ */
+  const handleScroll = () => {
+    if (hasWindow()) {
+      if (window.scrollY > navHeight) {
+        if (!stickyFooterEl?.current) return;
+        if (!isSticky) {
+          stickyFooterEl.current.classList.add("sticky");
+          setIsSticky(true);
+        }
+      } else {
+        stickyFooterEl?.current?.classList.remove("sticky");
+        setIsSticky(false);
+      }
+    }
+  };
+
+  const scrollCallback = useCallback(handleScroll, [isSticky, navHeight, stickyFooterEl]);
+
+  const calculateNavHeight = useCallback(
+    (reset = false) => {
+      if (
+        mainHeaderEl?.current &&
+        mainHeaderEl?.current?.clientHeight &&
+        (navHeight == 0 || reset)
+      ) {
+        setNavHeight(mainHeaderEl?.current?.clientHeight);
+      }
+    },
+    [mainHeaderEl, navHeight]
+  );
+
+  useEffect(() => {
+    calculateNavHeight();
+  }, [calculateNavHeight]);
+
+  useEffect(() => {
+    calculateNavHeight(true);
+  }, [calculateNavHeight]);
+
+  useEffect(() => {
+    if (!hasWindow()) return;
+
+    window.addEventListener('scroll', scrollCallback);
+    return () => {
+      window.removeEventListener('scroll', scrollCallback);
+    };
+  });
 
   const sitecoreRootId = '{11111111-1111-1111-1111-111111111111}-root';
 
@@ -335,7 +391,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
 
 
       <Card>
-        <CardHeader className="flex items-center">
+        <CardHeader className="flex items-center" ref={mainHeaderEl}>
           <Stack spacing={2} className="grow">
             <Heading >Export Content</Heading >
             <p>Export content from your Sitecore instance</p>
@@ -603,27 +659,38 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                 </Alert>
               </Stack>
             </Card>
-
-            <div className="mt-4 space-y-2">
-              <Stack spacing="6">
-                <Wrap align="center">
-                  <Button size="sm" onClick={runExport}>
-                    Run Export
-                  </Button>
-                  <Button variant="outline" colorScheme="primary" size="sm" onClick={() => setIsModalOpen(true)}>
-                    Save Settings
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={clearAll}>
-                    Clear All
-                  </Button>
-                </Wrap>
-              </Stack>
-            </div>
           </Stack>
 
           <SaveSettingsModal open={isModalOpen} emptySettings={emptySettings} onOpenChange={setIsModalOpen} onSubmit={handleSaveSettings} />
         </CardBody>
       </Card >
+      {/* for spacing */}
+      <Card>
+        <CardBody>
+          <Stack spacing="6">
+
+          </Stack>
+        </CardBody>
+      </Card>
+      <Card className={isSticky ? "sticky stickyfooter" : "stickyfooter"} ref={stickyFooterEl}>
+        <CardBody>
+          <div className="mb-4 pl-4 space-y-2">
+            <Stack spacing="6">
+              <Wrap align="center">
+                <Button size="sm" onClick={runExport}>
+                  Run Export
+                </Button>
+                <Button variant="outline" colorScheme="primary" size="sm" onClick={() => setIsModalOpen(true)}>
+                  Save Settings
+                </Button>
+                <Button variant="outline" size="sm" onClick={clearAll}>
+                  Clear All
+                </Button>
+              </Wrap>
+            </Stack>
+          </div>
+        </CardBody>
+      </Card>
     </>
   );
 };
