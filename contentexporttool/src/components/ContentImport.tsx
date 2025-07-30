@@ -6,6 +6,7 @@ import Papa from 'papaparse';
 import { FC, useState } from "react";
 import { Separator } from "./ui/separator";
 import { CardContent } from "./ui/card";
+import { AuthorInfo } from "./AuthorInfo";
 
 
 interface ImportTool {
@@ -100,146 +101,150 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
     return (
         <>
             <style>{`.downloadBtn { display: none }`}</style>
-            <Card className="rounded-sm border bg-card">
-                <CardHeader>
-                    <Stack spacing={2}>
-                        <Heading>Import Content</Heading>
-                        <p>
-                            Import content from CSV files into your Sitecore instance <br />
-                        </p>
+            <Stack spacing="4" >
+                <Card className="rounded-sm border bg-card">
+                    <CardHeader>
+                        <Stack spacing={2}>
+                            <Heading>Import Content</Heading>
+                            <p>
+                                Import content from CSV files into your Sitecore instance <br />
+                            </p>
 
-                    </Stack>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="grid w-full max-w-sm items-center gap-1.5">
-                        <div className="flex justify-between gap-4">
-                            <Input
-                                key={fileKey}
-                                id="inptFile"
-                                type="file"
-                                accept=".csv,.xlsx"
-                                onChange={onFileChange}
-                                className="cursor-pointer"
-                            />
-                            <Button onClick={clearFileInput} variant="outline">Clear</Button>
+                        </Stack>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="grid w-full max-w-sm items-center gap-1.5">
+                            <div className="flex justify-between gap-4">
+                                <Input
+                                    key={fileKey}
+                                    id="inptFile"
+                                    type="file"
+                                    accept=".csv,.xlsx"
+                                    onChange={onFileChange}
+                                    className="cursor-pointer"
+                                />
+                                <Button onClick={clearFileInput} variant="outline">Clear</Button>
+                            </div>
+
+                            <Button onClick={handleRunImport} disabled={!selectedFile}>
+                                Import
+                            </Button>
                         </div>
 
-                        <Button onClick={handleRunImport} disabled={!selectedFile}>
-                            Import
-                        </Button>
-                    </div>
+                        {selectedFile && (
+                            <div className="rounded-md bg-muted p-4">
+                                <h3 className="font-medium mb-2">File Details</h3>
+                                <div className="space-y-1 text-sm">
+                                    <p>File Name: {selectedFile.name}</p>
+                                    <p>Type: {selectedFile.type}</p>
+                                    <p>Modified: {new Date(selectedFile.lastModified).toLocaleString()}</p>
+                                </div>
+                            </div>
+                        )}
 
-                    {selectedFile && (
-                        <div className="rounded-md bg-muted p-4">
-                            <h3 className="font-medium mb-2">File Details</h3>
-                            <div className="space-y-1 text-sm">
-                                <p>File Name: {selectedFile.name}</p>
-                                <p>Type: {selectedFile.type}</p>
-                                <p>Modified: {new Date(selectedFile.lastModified).toLocaleString()}</p>
+                        <div className="importOptions">
+                            <div className="radio">
+                                <label>
+                                    <input
+                                        type="radio"
+                                        value="update"
+                                        checked={isUpdate}
+                                        onChange={() => {
+                                            setIsUpdate(true);
+                                            setIsCreate(false);
+                                        }}
+                                    />
+                                    Update
+                                </label>
+                            </div>
+                            <div className="radio">
+                                <label>
+                                    <input
+                                        type="radio"
+                                        value="create"
+                                        checked={isCreate}
+                                        onChange={() => {
+                                            setIsCreate(true);
+                                            setIsUpdate(false);
+                                        }}
+                                    />
+                                    Create
+                                </label>
                             </div>
                         </div>
-                    )}
 
-                    <div className="importOptions">
-                        <div className="radio">
-                            <label>
-                                <input
-                                    type="radio"
-                                    value="update"
-                                    checked={isUpdate}
-                                    onChange={() => {
-                                        setIsUpdate(true);
-                                        setIsCreate(false);
-                                    }}
-                                />
-                                Update
-                            </label>
-                        </div>
-                        <div className="radio">
-                            <label>
-                                <input
-                                    type="radio"
-                                    value="create"
-                                    checked={isCreate}
-                                    onChange={() => {
-                                        setIsCreate(true);
-                                        setIsUpdate(false);
-                                    }}
-                                />
-                                Create
-                            </label>
-                        </div>
-                    </div>
+                        {success &&
+                            <Alert status="success">
+                                <AlertIcon />
+                                <AlertDescription>{successMessage}</AlertDescription>
+                            </Alert>
+                        }
+                        {errors && errors.length > 0 &&
+                            <Alert status="error">
+                                <AlertIcon />
+                                <AlertDescription>
+                                    <ul>
+                                        {errors?.map((item, index) => (
+                                            <li key={index}>
+                                                {item}
+                                            </li>
 
-                    {success &&
-                        <Alert status="success">
-                            <AlertIcon />
-                            <AlertDescription>{successMessage}</AlertDescription>
-                        </Alert>
-                    }
-                    {errors && errors.length > 0 &&
-                        <Alert status="error">
-                            <AlertIcon />
+                                        ))}
+                                    </ul>
+                                </AlertDescription>
+                            </Alert>
+                        }
+
+                        <Alert>
                             <AlertDescription>
-                                <ul>
-                                    {errors?.map((item, index) => (
-                                        <li key={index}>
-                                            {item}
+                                <Stack spacing="4">
+                                    <h3 className="font-medium">Getting Started</h3>
+                                    <p>Required CSV columns for updating items:</p>
+                                    <ul className="list-disc pl-4 space-y-1">
+                                        <li>
+                                            <strong>Item Path</strong> - Item path string e.g. /sitecore/content/Home
                                         </li>
+                                    </ul>
+                                    <p>Required CSV columns for new items:</p>
+                                    <ul className="list-disc pl-4 space-y-1">
+                                        <li>
+                                            <strong>Item Path</strong> - Parent item ID (GUID)
+                                        </li>
+                                        <li>
+                                            <strong>Template</strong> - Item template (GUID)
+                                        </li>
+                                        <li>
+                                            <strong>Name</strong> - Item name (string)
+                                        </li>
+                                    </ul>
 
-                                    ))}
-                                </ul>
+                                    <Separator />
+
+                                    <div className="space-y-2">
+                                        <h3 className="font-medium">Important Notes</h3>
+                                        <ul className="list-disc pl-4 space-y-1 text-sm">
+                                            <li>Review all modified items before publishing</li>
+                                            <li>Only CSV format is supported</li>
+                                            <li>Item Path must be string for Update, GUID for Create</li>
+                                            <li>
+                                                Supports all field types, formatted as <b>raw values</b>
+                                            </li>
+                                            <li>Add Language column for specific versions</li>
+                                        </ul>
+                                        <h3 className="font-medium">Tips</h3>
+                                        <p>
+                                            The best way to make sure your file is formatted correctly is to export your content first, edit
+                                            in Excel, and then import the same file; it will already be formatted correctly.
+                                        </p>
+                                    </div>
+                                </Stack>
                             </AlertDescription>
                         </Alert>
-                    }
-
-                    <Alert>
-                        <AlertDescription>
-                            <Stack spacing="4">
-                                <h3 className="font-medium">Getting Started</h3>
-                                <p>Required CSV columns for updating items:</p>
-                                <ul className="list-disc pl-4 space-y-1">
-                                    <li>
-                                        <strong>Item Path</strong> - Item path string e.g. /sitecore/content/Home
-                                    </li>
-                                </ul>
-                                <p>Required CSV columns for new items:</p>
-                                <ul className="list-disc pl-4 space-y-1">
-                                    <li>
-                                        <strong>Item Path</strong> - Parent item ID (GUID)
-                                    </li>
-                                    <li>
-                                        <strong>Template</strong> - Item template (GUID)
-                                    </li>
-                                    <li>
-                                        <strong>Name</strong> - Item name (string)
-                                    </li>
-                                </ul>
-
-                                <Separator />
-
-                                <div className="space-y-2">
-                                    <h3 className="font-medium">Important Notes</h3>
-                                    <ul className="list-disc pl-4 space-y-1 text-sm">
-                                        <li>Review all modified items before publishing</li>
-                                        <li>Only CSV format is supported</li>
-                                        <li>Item Path must be string for Update, GUID for Create</li>
-                                        <li>
-                                            Supports all field types, formatted as <b>raw values</b>
-                                        </li>
-                                        <li>Add Language column for specific versions</li>
-                                    </ul>
-                                    <h3 className="font-medium">Tips</h3>
-                                    <p>
-                                        The best way to make sure your file is formatted correctly is to export your content first, edit
-                                        in Excel, and then import the same file; it will already be formatted correctly.
-                                    </p>
-                                </div>
-                            </Stack>
-                        </AlertDescription>
-                    </Alert>
-                </CardContent>
-            </Card>
+                        <br />
+                    </CardContent>
+                </Card>
+                <AuthorInfo />
+            </Stack>
         </>
     )
 }

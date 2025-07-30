@@ -10,6 +10,7 @@ import { ContentBrowseModal } from "./ContentBrowseModal";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 import { SaveSettingsModal } from "./SaveSettingsModal";
 import { FieldBrowseModal } from "./FieldBrowseModal";
+import { AuthorInfo } from "./AuthorInfo";
 
 interface ExportToolProps {
   appContext: ApplicationContext | null,
@@ -662,8 +663,12 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
           </Stack>
 
           <SaveSettingsModal open={isModalOpen} emptySettings={emptySettings} onOpenChange={setIsModalOpen} onSubmit={handleSaveSettings} />
+
+          <AuthorInfo />
+
         </CardBody>
       </Card >
+
       {/* for spacing */}
       <Card>
         <CardBody>

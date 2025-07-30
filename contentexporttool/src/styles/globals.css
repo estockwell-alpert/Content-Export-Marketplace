@@ -817,8 +817,6 @@ select option {
 }
 
 .author-ribbon {
-  position: fixed;
-  z-index: 9;
   background: white;
   width: 100%;
   display: flex;
