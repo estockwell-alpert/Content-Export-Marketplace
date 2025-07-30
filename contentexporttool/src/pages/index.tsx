@@ -60,6 +60,8 @@ export default function Home() {
 
   return (
     <>
+      <p className="px-4 author-ribbon flex"><img src="https://www.velir.com/-/media/logos/2025/velir-logo--large.svg" /><span>Created by <a href="https://ericastockwellalpert.wordpress.com/">Erica Stockwell-Alpert</a></span></p>
+
       <ChakraProvider theme={sitecoreTheme} toastOptions={toastOptions}>
         <div className="container mx-auto py-6 px-4">
           <div className="border bg-card text-card-foreground shadow-sm">
@@ -72,6 +74,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
+
 
             <Tabs defaultValue={'export'} className="w-full">
               <TabsList className="grid w-full grid-cols-2 border-b border-border">

@@ -67,7 +67,7 @@ body {
 }
 
 a {
-  color: inherit;
+  color: var(--colors-primary-600);
   text-decoration: none;
 }
 
@@ -814,4 +814,22 @@ select option {
 
 .stickyfooter.sticky {
   transform: translateY(0);
+}
+
+.author-ribbon {
+  position: fixed;
+  z-index: 9;
+  background: white;
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.author-ribbon a {
+  color: var(--colors-primary-600);
+}
+
+.author-ribbon img {
+  height: 14px;
 }
