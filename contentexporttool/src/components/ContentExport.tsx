@@ -2,9 +2,9 @@
 import { IContentNode } from "@/models/IContentNode";
 import { ISettings } from "@/models/ISettings";
 import { GenerateContentExport, GetAvailableFields } from "@/services/contentExportUtil";
-import { convertStringToGuid, validateGuid } from "@/utils/helpers";
+import { convertStringToGuid, hasWindow, validateGuid } from "@/utils/helpers";
 import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Select } from "@chakra-ui/react";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from "react";
 import { Root, createRoot } from "react-dom/client";
 import { ContentBrowseModal } from "./ContentBrowseModal";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
@@ -19,6 +19,7 @@ interface ExportToolProps {
 
 export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLanguages }) => {
   const [selectedSettingIndex, setSelectedSettingIndex] = useState<number>(0);
+  const [selectedSettings, setSelectedSettings] = useState<string>('');
   const [startItem, setStartItem] = useState<string>('');
   const [templatesStartItem, setTemplatesStartItem] = useState<string>();
   const [templates, setTemplates] = useState<string>('');
@@ -31,6 +32,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   const [updatedBy, setUpdatedBy] = useState<boolean>();
   const [convertGuids, setConvertGuids] = useState<boolean>();
   const [includeTemplate, setIncludeTemplate] = useState<boolean>();
+  const [allFields, setAllFields] = useState<boolean>();
   const [includeLang, setIncludeLang] = useState<boolean>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [savedSettings, setSavedSettings] = useState<ISettings[]>([]);
@@ -43,6 +45,62 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   const [contentMainRoot, setContentMainRoot] = useState<Root>();
   const [currentSelections, setCurrentSelections] = useState<any[]>([]);
   const [currentTemplateSelections, setCurrentTemplateSelections] = useState<any[]>([]);
+  const [isSticky, setIsSticky] = useState(false);
+  const mainHeaderEl = useRef<HTMLDivElement>(null);
+  const stickyFooterEl = useRef<HTMLDivElement>(null);
+  const [navHeight, setNavHeight] = useState(0);
+
+  /**
+ * Make the nav stick to top of window if scrolled down
+ * far enough, and return nav to default state if not
+ * @returns null if elements aren't rendered
+ */
+  const handleScroll = () => {
+    if (hasWindow()) {
+      if (window.scrollY > navHeight) {
+        if (!stickyFooterEl?.current) return;
+        if (!isSticky) {
+          stickyFooterEl.current.classList.add("sticky");
+          setIsSticky(true);
+        }
+      } else {
+        stickyFooterEl?.current?.classList.remove("sticky");
+        setIsSticky(false);
+      }
+    }
+  };
+
+  const scrollCallback = useCallback(handleScroll, [isSticky, navHeight, stickyFooterEl]);
+
+  const calculateNavHeight = useCallback(
+    (reset = false) => {
+      if (
+        mainHeaderEl?.current &&
+        mainHeaderEl?.current?.clientHeight &&
+        (navHeight == 0 || reset)
+      ) {
+        setNavHeight(mainHeaderEl?.current?.clientHeight);
+      }
+    },
+    [mainHeaderEl, navHeight]
+  );
+
+  useEffect(() => {
+    calculateNavHeight();
+  }, [calculateNavHeight]);
+
+  useEffect(() => {
+    calculateNavHeight(true);
+  }, [calculateNavHeight]);
+
+  useEffect(() => {
+    if (!hasWindow()) return;
+
+    window.addEventListener('scroll', scrollCallback);
+    return () => {
+      window.removeEventListener('scroll', scrollCallback);
+    };
+  });
 
   const sitecoreRootId = '{11111111-1111-1111-1111-111111111111}-root';
 
@@ -86,6 +144,13 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   };
 
   const clearAll = () => {
+    const btns = document.getElementsByClassName("downloadBtn");
+    if (btns && btns.length > 0) {
+      for (let i = 0; i < btns.length; i++) {
+        btns[i].remove();
+      }
+    }
+
     setStartItem('');
     setTemplates('');
     setTemplatesStartItem('');
@@ -102,6 +167,14 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     setErrorTemplates(false);
     setIncludeTemplate(false);
     setAvailableFields([]);
+
+    // browse modals
+    setCurrentSelections([]);
+    setCurrentTemplateSelections([]);
+
+    // dropdowns
+    setSelectedSettingIndex(0);
+    setSelectedSettings('');
   };
 
   const runExport = async () => {
@@ -130,7 +203,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       languages,
       includeTemplate,
       includeLang,
-      convertGuids
+      convertGuids,
+      allFields
     );
   };
 
@@ -236,6 +310,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       createdDate: createdDate,
       updatedBy: updatedBy,
       updatedDate: updatedDate,
+      allFields: allFields
     };
 
     // check if setting with name already exists
@@ -255,6 +330,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
 
   const handleSelectSettings = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedSettingIndex(e.target.selectedIndex);
+    setSelectedSettings(e.target.value);
 
     if (e.target.selectedIndex === 0) {
       clearAll();
@@ -279,6 +355,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     setUpdatedBy(setting.updatedBy);
     setUpdatedDate(setting.updatedDate);
     setConvertGuids(setting.convertGuids);
+    setAllFields(setting.allFields);
   };
 
   return (
@@ -314,7 +391,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
 
 
       <Card>
-        <CardHeader className="flex items-center">
+        <CardHeader className="flex items-center" ref={mainHeaderEl}>
           <Stack spacing={2} className="grow">
             <Heading >Export Content</Heading >
             <p>Export content from your Sitecore instance</p>
@@ -342,7 +419,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
               <Card variant="filled" className="rounded-sm border bg-card p-6">
                 <Stack spacing='2'>
                   <Heading size="lg">Saved Settings</Heading >
-                  <Select className={selectedSettingIndex === 0 ? "unselected" : ""} onChange={handleSelectSettings}>
+                  <Select className={selectedSettingIndex === 0 ? "unselected" : ""} value={selectedSettings} onChange={handleSelectSettings}>
                     <option value="" key="0">-- Select a saved configuration --</option>
                     {savedSettings.map((settings) => (
                       <option key={settings.id} value={settings.name}>
@@ -483,6 +560,16 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                   </Alert>
                 }
 
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id={`checkbox-template`}
+                    checked={allFields}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => setAllFields(event.target.checked === true)}
+                    className="mr-2"
+                  />
+                  <span className="flex-grow">Export all fields</span>
+                </div>
+
                 <div className="">
 
                   <FieldBrowseModal availableFields={availableFields ?? []} fields={fields} setFields={setFields} setBrowseContentOpen={setBrowseFieldsOpen} browseContentOpen={browseFieldsOpen}></FieldBrowseModal>
@@ -572,27 +659,38 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                 </Alert>
               </Stack>
             </Card>
-
-            <div className="mt-4 space-y-2">
-              <Stack spacing="6">
-                <Wrap align="center">
-                  <Button size="sm" onClick={runExport}>
-                    Run Export
-                  </Button>
-                  <Button variant="outline" colorScheme="primary" size="sm" onClick={() => setIsModalOpen(true)}>
-                    Save Settings
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={clearAll}>
-                    Clear All
-                  </Button>
-                </Wrap>
-              </Stack>
-            </div>
           </Stack>
 
           <SaveSettingsModal open={isModalOpen} emptySettings={emptySettings} onOpenChange={setIsModalOpen} onSubmit={handleSaveSettings} />
         </CardBody>
       </Card >
+      {/* for spacing */}
+      <Card>
+        <CardBody>
+          <Stack spacing="6">
+
+          </Stack>
+        </CardBody>
+      </Card>
+      <Card className={isSticky ? "sticky stickyfooter" : "stickyfooter"} ref={stickyFooterEl}>
+        <CardBody>
+          <div className="mb-4 pl-4 space-y-2">
+            <Stack spacing="6">
+              <Wrap align="center">
+                <Button size="sm" onClick={runExport}>
+                  Run Export
+                </Button>
+                <Button variant="outline" colorScheme="primary" size="sm" onClick={() => setIsModalOpen(true)}>
+                  Save Settings
+                </Button>
+                <Button variant="outline" size="sm" onClick={clearAll}>
+                  Clear All
+                </Button>
+              </Wrap>
+            </Stack>
+          </div>
+        </CardBody>
+      </Card>
     </>
   );
 };

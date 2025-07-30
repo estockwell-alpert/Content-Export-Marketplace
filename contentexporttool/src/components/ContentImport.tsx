@@ -28,8 +28,6 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
         //inpt.value
         setFileKey(Math.random().toString(36));
         setSelectedFile(undefined);
-        setSuccess(false);
-        setErrors([]);
     };
 
     const onFileChange = (event: any) => {
@@ -92,13 +90,16 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
 
             // clear out csv data
             setParsedCsvData(null);
+            clearFileInput();
         } catch (error) {
             console.error('Error importing content:', error);
+            clearFileInput();
         }
     };
 
     return (
         <>
+            <style>{`.downloadBtn { display: none }`}</style>
             <Card className="rounded-sm border bg-card">
                 <CardHeader>
                     <Stack spacing={2}>
@@ -120,7 +121,7 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                                 onChange={onFileChange}
                                 className="cursor-pointer"
                             />
-                            <Button onClick={clearFileInput} variant="ghost">Clear</Button>
+                            <Button onClick={clearFileInput} variant="outline">Clear</Button>
                         </div>
 
                         <Button onClick={handleRunImport} disabled={!selectedFile}>

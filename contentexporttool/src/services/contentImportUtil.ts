@@ -78,24 +78,34 @@ export const PostMutationQuery = async (
 
         let fieldFragments = '';
         for (const property in row) {
+            // skip core columns
+            const field = property.trim().toLowerCase();
             if (
-                property === 'Item Path' ||
-                property === 'Template' ||
-                property === 'ID' ||
-                property === 'Name' ||
-                property === 'Language' ||
-                property === ''
+                field === 'item path' ||
+                field === 'template' ||
+                field === 'id' ||
+                field === 'name' ||
+                field === 'language' ||
+                field === ""
             ) {
                 continue;
             }
 
             const value = row[property];
+
+            // skip fields that don't exist
+            if (value.toLowerCase() === "n/a") {
+                continue;
+            }
+
+            const cleanValue = value.replaceAll("\"", "\\\"");
+
             const fieldFragment =
                 `
           { name: "` +
-                property +
+                field +
                 `", value: "` +
-                value.replace('"', '&quot;') +
+                cleanValue +
                 `" }`;
 
             fieldFragments += fieldFragment;
@@ -120,7 +130,8 @@ export const PostMutationQuery = async (
             if (results.data.errors) {
                 for (let j = 0; j < results.data.errors.length; j++) {
                     const error = results.data.errors[j];
-                    errors.push("Error on Line " + (i + 2) + ": " + error.message.replace(/[\r\n]+/gm, ' '));
+                    const csvItemPath = csvData[i]['Item Path'];
+                    errors.push("Error on Line " + (i + 2) + ": " + csvItemPath + " - " + error.message.replace(/[\r\n]+/gm, ' '));
                 }
             } else {
                 successfullQueries++;
@@ -145,7 +156,7 @@ export const PostMutationQuery = async (
     let messages: string[] = [];
 
     if (successfullQueries > 0) {
-        messages.push('Successfully updated ' + successfullQueries + ' item(s)');
+        messages.push('Successfully ' + (update ? 'updated' : 'created') + ' ' + successfullQueries + ' item(s)');
     }
 
     if (errors.length > 0) {
