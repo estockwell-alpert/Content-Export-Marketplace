@@ -3,7 +3,7 @@ import { IContentNode } from "@/models/IContentNode";
 import { ISettings } from "@/models/ISettings";
 import { GenerateContentExport, GetAvailableFields } from "@/services/contentExportUtil";
 import { convertStringToGuid, hasWindow, validateGuid } from "@/utils/helpers";
-import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Select } from "@chakra-ui/react";
+import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Select, Icon } from "@chakra-ui/react";
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from "react";
 import { Root, createRoot } from "react-dom/client";
 import { ContentBrowseModal } from "./ContentBrowseModal";
@@ -11,6 +11,7 @@ import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client"
 import { SaveSettingsModal } from "./SaveSettingsModal";
 import { FieldBrowseModal } from "./FieldBrowseModal";
 import { AuthorInfo } from "./AuthorInfo";
+import { mdiTrayArrowDown } from '@mdi/js'
 
 interface ExportToolProps {
   appContext: ApplicationContext | null,
@@ -145,11 +146,10 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   };
 
   const clearAll = () => {
-    const btns = document.getElementsByClassName("downloadBtn");
-    if (btns && btns.length > 0) {
-      for (let i = 0; i < btns.length; i++) {
-        btns[i].remove();
-      }
+    // hide download button
+    const wrapper = document.getElementById("downloadBtnWrapper");
+    if (wrapper) {
+      wrapper.classList.add("hidden");
     }
 
     setStartItem('');
@@ -392,7 +392,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
 
 
       <Card>
-        <CardHeader className="flex items-center" ref={mainHeaderEl}>
+        <CardHeader className="flex items-center gap-6" ref={mainHeaderEl}>
           <Stack spacing={2} className="grow">
             <Heading >Export Content</Heading >
             <p>Export content from your Sitecore instance</p>
@@ -414,6 +414,16 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                 </Wrap>
               </Stack>
             </div>
+          </Stack>
+          <Stack className="download-btn-wrapper hidden" id="downloadBtnWrapper">
+            <Card>
+              <CardBody>
+                <a id="downloadBtn" className="downloadBtn chakra-button" href="javascript:void(0)">
+                  <Icon className="mr-2"><path d={mdiTrayArrowDown} /></Icon> <span>Download Report</span>
+                </a>
+                <p className="mt-2">(Right click and open in new tab)</p>
+              </CardBody>
+            </Card>
           </Stack>
           {savedSettings && savedSettings.length > 0 && (
             <Stack>

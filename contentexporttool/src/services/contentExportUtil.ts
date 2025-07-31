@@ -21,12 +21,10 @@ export const GenerateContentExport = async (
 
   includeLang = true; // since Auth export exports all languages by default, just always show the column. Check if Edge does all langs by default too
 
-  // remove previous button
-  const btns = document.getElementsByClassName("downloadBtn");
-  if (btns && btns.length > 0) {
-    for (let i = 0; i < btns.length; i++) {
-      btns[i].remove();
-    }
+  // hide download button
+  const wrapper = document.getElementById("downloadBtnWrapper");
+  if (wrapper) {
+    wrapper.classList.add("hidden");
   }
 
   if (loadingModal) {
@@ -163,15 +161,37 @@ export const GenerateContentExport = async (
   console.log(csvString);
 
   // DOWNLOAD WON'T WORK UNTIL SITECORE UPDATES SANDBOX PERMISSION
-  // add new button
-  const element = document.createElement('a');
-  element.classList.add('downloadBtn');
+  // get button
+  let element = document.getElementById("downloadBtn") as HTMLAnchorElement;
+
+  // just a backup...
+  if (element === null) {
+    element = document.createElement('a');
+    element.innerHTML = "DOWNLOAD"
+    element.classList.add('downloadBtn');
+    element.id = "downloadBtn";
+    document.body.appendChild(element); // Required for this to work in FireFox
+  }
+
+  // set href to file blob
   const file = new Blob([csvString], { type: 'text/csv' });
   element.href = URL.createObjectURL(file);
-  element.innerHTML = "DOWNLOAD"
-  element.download = 'ContentExport.csv';
-  element.setAttribute("download", "Content Export.csv");
-  document.body.appendChild(element); // Required for this to work in FireFox
+
+  // set file name dynamically
+  const downloadFileName = "ContentExport.csv";
+  element.setAttribute("download", downloadFileName);
+
+  // show wrapper
+  if (wrapper) {
+    // scroll to download button and highlight
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+
+    Flash(0, wrapper);
+  }
+
   element.click();
   // remove button after download
   //element.remove();
@@ -180,6 +200,25 @@ export const GenerateContentExport = async (
     loadingModal.style.display = 'none';
   }
 };
+
+export const Flash = (i: number, elem: HTMLElement) => {
+  elem.classList.remove("hidden");
+  setTimeout(function () {
+
+    if (elem.classList.contains("highlight")) {
+      elem.classList.remove("highlight");
+    } else {
+      elem.classList.add("highlight");
+    }
+
+    i++;
+
+    console.log('hello ' + i);
+    if (i < 6) {
+      Flash(i, elem);
+    }
+  }, 300)
+}
 
 export const ProcessFieldValue = async (
   fieldValue: string,

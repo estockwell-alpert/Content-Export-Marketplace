@@ -17,3 +17,4 @@ Make button ribbon sticky ✓
 Import - add additional code to make importing easier
  > Convert raw media paths/GUIDs to image tags?
  > Convert path to ID? 
+ > Export linked item names/IDs?
