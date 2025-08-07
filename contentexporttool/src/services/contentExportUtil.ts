@@ -28,7 +28,7 @@ export const GenerateContentExport = async (
   }
 
   if (loadingModal) {
-    loadingModal.style.display = 'block';
+    loadingModal.classList.remove("hidden");
   }
 
   // do everythign here
@@ -108,7 +108,7 @@ export const GenerateContentExport = async (
     if (typeof result === 'string' && result.indexOf('GqlApiError:Error') > -1) {
       alert('Something went wrong. Check the console for errors');
       if (loadingModal) {
-        loadingModal.style.display = 'none';
+        loadingModal.classList.add("hidden");
       }
       return;
     }
@@ -202,7 +202,7 @@ export const GenerateContentExport = async (
   //element.remove();
 
   if (loadingModal) {
-    loadingModal.style.display = 'none';
+    loadingModal.classList.add("hidden");
   }
 
   return { success: true }

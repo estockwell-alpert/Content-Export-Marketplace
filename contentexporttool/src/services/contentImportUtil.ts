@@ -15,7 +15,7 @@ export const PostMutationQuery = async (
     // show loading modal
     const loadingModal = document.getElementById('loading-modal');
     if (loadingModal) {
-        loadingModal.style.display = 'block';
+        loadingModal.classList.remove("hidden");
     }
 
     if (!csvData && file?.name.endsWith('.xlsx')) {
@@ -39,7 +39,7 @@ export const PostMutationQuery = async (
 
     if (!csvData) {
         if (loadingModal) {
-            loadingModal.style.display = 'none';
+            loadingModal.classList.add("hidden");
         }
         return ['No file data found'];
     }
@@ -64,7 +64,7 @@ export const PostMutationQuery = async (
 
         if (!update && (!row['Item Path'] || !row['Name'] || !row['Template'])) {
             if (loadingModal) {
-                loadingModal.style.display = 'none';
+                loadingModal.classList.add("hidden");
             }
             return ['Missing required columns. Please make sure your CSV includes columns for Item Path, Template, and Name'];
         }
@@ -126,6 +126,11 @@ export const PostMutationQuery = async (
             console.log('Results: ');
             console.log(results);
 
+            if (results.error) {
+                errors.push("Something went wrong: " + results.error.detail);
+                break;
+            }
+
             // test this
             if (results.data.errors) {
                 for (let j = 0; j < results.data.errors.length; j++) {
@@ -141,14 +146,14 @@ export const PostMutationQuery = async (
         console.log(error);
 
         if (loadingModal) {
-            loadingModal.style.display = 'none';
+            loadingModal.classList.add("hidden");
         }
-
+        errors.push(JSON.stringify(error));
         return [JSON.stringify(error)];
     }
 
     if (loadingModal) {
-        loadingModal.style.display = 'none';
+        loadingModal.classList.add("hidden");
     }
 
     console.log('ERRORS: ');
@@ -160,7 +165,9 @@ export const PostMutationQuery = async (
     }
 
     if (errors.length > 0) {
-        messages.push(errors.length + ' error(s) occured:');
+        if (!(errors.length == 1 && errors[0].indexOf("Something went wrong") > -1)) {
+            messages.push(errors.length + ' error(s) occured:');
+        }
         messages = messages.concat(errors);
     }
     return messages;

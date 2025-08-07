@@ -269,7 +269,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
 
     const loadingModal = document.getElementById('loading-modal');
     if (loadingModal) {
-      loadingModal.style.display = 'block';
+      loadingModal.classList.remove("hidden");
     }
 
     const results = await GetAvailableFields(appContext, client, templates);
@@ -282,7 +282,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     setBrowseFieldsOpen(true);
 
     if (loadingModal) {
-      loadingModal.style.display = 'none';
+      loadingModal.classList.add("hidden");
     }
 
   };
