@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IContentNode } from "@/models/IContentNode";
 import { stripGuid } from "@/utils/helpers";
-import { Button } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, FC } from "react";
+import { Alert, AlertDescription, AlertIcon, Button } from "@chakra-ui/react";
+import { Dispatch, SetStateAction, FC, useState } from "react";
 import { ContentNode } from "./ContentNode";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 
@@ -33,6 +33,10 @@ export const ContentBrowseModal: FC<ContentBrowseModalProps> = ({
   startNode,
   templatesOnly,
 }) => {
+
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [error, setError] = useState<boolean>(false);
+
   const confirmSelection = () => {
     const startItems = startItem?.split(',');
     const newIds = currentSelections
@@ -52,6 +56,10 @@ export const ContentBrowseModal: FC<ContentBrowseModalProps> = ({
   return (
     <>
       <div id="content-tree" className={'content-tree modal ' + (browseContentOpen ? 'open' : '')}>
+        {error && <Alert status="error">
+          <AlertIcon />
+          <AlertDescription>Something went wrong: {errorMessage}</AlertDescription>
+        </Alert>}
         <div className="inner">
           <div className="absolute right flex justify-end gap-2">
             <Button className="mobile" variant="outline" size="sm" onClick={() => setBrowseContentOpen(false)}>
@@ -73,6 +81,8 @@ export const ContentBrowseModal: FC<ContentBrowseModalProps> = ({
                 selectNode={selectNode}
                 currentSelections={currentSelections ?? []}
                 templatesOnly={templatesOnly}
+                setError={setError}
+                setErrorMessage={setErrorMessage}
               ></ContentNode>
             </ul>
           </div>

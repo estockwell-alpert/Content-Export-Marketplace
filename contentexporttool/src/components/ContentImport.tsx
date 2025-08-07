@@ -100,7 +100,7 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
 
     return (
         <>
-            <style>{`.downloadBtn { display: none }`}</style>
+            <style>{`.downloadBtnWrapper { display: none }`}</style>
             <Stack spacing="4" >
                 <Card className="rounded-sm border bg-card">
                     <CardHeader>

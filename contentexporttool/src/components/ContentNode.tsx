@@ -2,7 +2,7 @@
 
 import { IContentNode } from '@/models/IContentNode';
 import { convertStringToGuid } from '@/utils/helpers';
-import React, { FC } from 'react';
+import React, { Dispatch, FC, SetStateAction } from 'react';
 import cn from 'classnames';
 import { GetItemChildren } from '@/services/contentExportUtil';
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
@@ -14,6 +14,8 @@ interface ContentNodeProps {
   selectNode: (e: any) => void;
   currentSelections: IContentNode[];
   templatesOnly?: boolean;
+  setError: Dispatch<SetStateAction<boolean>>;
+  setErrorMessage: Dispatch<SetStateAction<string>>;
 }
 
 export const ContentNode: FC<ContentNodeProps> = ({
@@ -23,6 +25,8 @@ export const ContentNode: FC<ContentNodeProps> = ({
   selectNode,
   currentSelections,
   templatesOnly,
+  setError,
+  setErrorMessage
 }) => {
   const [children, setChildren] = React.useState([]);
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
@@ -32,6 +36,13 @@ export const ContentNode: FC<ContentNodeProps> = ({
     if (!isLoaded) {
       const id = e.target.parentElement.getAttribute('data-id');
       const results = await GetItemChildren(appContext, client, id);
+
+      if (results.error) {
+        setError(true);
+        setErrorMessage(results.error.detail);
+        return;
+      }
+
       const children = results.data.data.item.children.nodes;
 
       console.log(children);
@@ -46,6 +57,8 @@ export const ContentNode: FC<ContentNodeProps> = ({
         setIsOpen(true);
       }
     }
+
+    setError(false);
   };
 
   const isSelected = () => {
@@ -80,6 +93,8 @@ export const ContentNode: FC<ContentNodeProps> = ({
               selectNode={selectNode}
               currentSelections={currentSelections}
               templatesOnly={templatesOnly}
+              setError={setError}
+              setErrorMessage={setErrorMessage}
             ></ContentNode>
           ))}
       </ul>

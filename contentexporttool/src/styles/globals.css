@@ -764,19 +764,7 @@ a {
   animation: var(--animate-spin);
 }
 .hidden {
-  display: none;
-}
-
-.downloadBtn {
-  background: white;
-    font-weight: bold;
-    padding: 20px;
-    border: 2px solid red;
-    position: relative;
-    z-index: 999;
-    display: inline-block;
-    margin: 0 auto;
-    left: 50%;
+  display: none !important;
 }
 
 select.unselected {
@@ -830,4 +818,56 @@ select option {
 
 .author-ribbon img {
   height: 14px;
+}
+
+/* Copied from lg chakra button to duplicate appearance of button but use link element */
+.downloadBtn {
+    display: -webkit-inline-box;
+    display: -webkit-inline-flex;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    position: relative;
+    white-space: nowrap;
+    vertical-align: middle;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    line-height: 1.2;
+    border-radius: var(--radii-full);
+    font-weight: var(--fontWeights-semibold);
+    transition-property: var(--transition-property-common);
+    transition-duration: var(--transition-duration-normal);
+    height: var(--sizes-12);
+    min-width: var(--sizes-12);
+    font-size: var(--fontSizes-md);
+    -webkit-padding-start: var(--space-6);
+    padding-inline-start: var(--space-6);
+    -webkit-padding-end: var(--space-6);
+    padding-inline-end: var(--space-6);
+    background: var(--colors-primary-500);
+    color: var(--colors-chakra-inverse-text);
+}
+
+.download-btn-wrapper .chakra-card__body {
+  transition: 1s ease;
+  border-radius: 6px;
+}
+
+.download-btn-wrapper.highlight .chakra-card__body {
+  background: #F8D904;
 }
