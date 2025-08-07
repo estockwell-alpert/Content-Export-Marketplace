@@ -15,7 +15,7 @@ export const GenerateContentExport = async (
   includeLang?: boolean,
   convertGuids?: boolean,
   allFields?: boolean
-) => {
+): Promise<any> => {
   // show loading modal
   const loadingModal = document.getElementById('loading-modal');
 
@@ -42,6 +42,11 @@ export const GenerateContentExport = async (
 
   // make GQL request
   const response = await makeGraphQLQuery(appContext, client, querystring);
+
+  if (response.error) {
+    return response;
+  }
+
   results = response.data.data.search.results;
 
   console.log(results);
@@ -199,6 +204,8 @@ export const GenerateContentExport = async (
   if (loadingModal) {
     loadingModal.style.display = 'none';
   }
+
+  return { success: true }
 };
 
 export const Flash = (i: number, elem: HTMLElement) => {

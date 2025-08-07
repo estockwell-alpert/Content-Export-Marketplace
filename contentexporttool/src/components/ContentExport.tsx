@@ -3,7 +3,7 @@ import { IContentNode } from "@/models/IContentNode";
 import { ISettings } from "@/models/ISettings";
 import { GenerateContentExport, GetAvailableFields } from "@/services/contentExportUtil";
 import { convertStringToGuid, hasWindow, validateGuid } from "@/utils/helpers";
-import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Select, Icon } from "@chakra-ui/react";
+import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Select, Icon, AlertIcon } from "@chakra-ui/react";
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from "react";
 import { Root, createRoot } from "react-dom/client";
 import { ContentBrowseModal } from "./ContentBrowseModal";
@@ -12,6 +12,7 @@ import { SaveSettingsModal } from "./SaveSettingsModal";
 import { FieldBrowseModal } from "./FieldBrowseModal";
 import { AuthorInfo } from "./AuthorInfo";
 import { mdiTrayArrowDown } from '@mdi/js'
+import React from "react";
 
 interface ExportToolProps {
   appContext: ApplicationContext | null,
@@ -51,6 +52,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   const mainHeaderEl = useRef<HTMLDivElement>(null);
   const stickyFooterEl = useRef<HTMLDivElement>(null);
   const [navHeight, setNavHeight] = useState(0);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [error, setError] = useState<boolean>(false);
 
   /**
  * Make the nav stick to top of window if scrolled down
@@ -195,7 +198,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
 
     console.log(itemFields);
 
-    await GenerateContentExport(
+    const result = await GenerateContentExport(
       appContext,
       client,
       startItem,
@@ -207,13 +210,20 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       convertGuids,
       allFields
     );
+
+    if (result.error) {
+      setError(true);
+      setErrorMessage(result.error.detail);
+    } else {
+      setError(false);
+    }
   };
 
-  const resetTree = () => {
+  const resetTree = React.useCallback(() => {
     if (contentMainRoot) {
       contentMainRoot.render(<ul id={sitecoreRootId}></ul>);
     }
-  };
+  }, [contentMainRoot]);
 
   const selectNode = (e: any) => {
     const id = convertStringToGuid(e.target.parentElement.getAttribute('data-id'));
@@ -446,6 +456,10 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
 
         <CardBody className="space-y-6">
           <Stack spacing="4">
+            {error && <Alert status="error">
+              <AlertIcon />
+              <AlertDescription>Something went wrong: {errorMessage}</AlertDescription>
+            </Alert>}
             <Card variant="filled" className="rounded-sm border bg-card p-6">
               <Heading size="lg">Filters</Heading >
               {/* Start Items Section */}
