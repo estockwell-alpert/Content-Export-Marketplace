@@ -38,6 +38,13 @@ export const GenerateContentExport = async (
   const cursor = '';
   //let calls = 0;
 
+  // get inheritor templates
+  if (inheritors && templates && templates !== "") {
+    const allTemplates = await GetInheritorTemplates(appContext, client, templates);
+    templates = allTemplates.join(", ");
+    includeTemplate = true;
+  }
+
   // generate query
   const querystring = GetSearchQuery(startItem, templates, fields, languages, cursor, allFields);
 
@@ -337,9 +344,9 @@ export const GetInheritorTemplates = async (
     const template = templateResults[i];
     const baseTemplates = template.innerItem.baseTemplate.value.toLowerCase();
 
-    for (let j = 0; i < selectedTemplates?.length; j++) {
+    for (let j = 0; j < selectedTemplates?.length; j++) {
       if (baseTemplates.indexOf(selectedTemplates[j]) > -1) {
-        inheritors.push(template);
+        inheritors.push(template.innerItem.itemId);
         break;
       }
     }

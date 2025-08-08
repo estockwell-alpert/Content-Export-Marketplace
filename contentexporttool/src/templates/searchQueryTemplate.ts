@@ -112,13 +112,9 @@ export const SchemaQueryTemplate = gql`
     search(
       query: {
         searchStatement: {
-          criteria: [{ criteriaType: SEARCH, field: "_language", value: "langFragment", operator: MUST }]
-          operator: MUST
-          subStatements: {
-            criteria: [pathsFragment]
+          criteria: [pathsFragment]
             operator: MUST
             subStatements: { criteria: [templatesFragment], operator: MUST }
-          }
         }
         paging: { pageSize: 10000 }
       }

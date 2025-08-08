@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IContentNode } from "@/models/IContentNode";
 import { ISettings } from "@/models/ISettings";
-import { GenerateContentExport, GetAvailableFields, GetInheritorTemplates } from "@/services/contentExportUtil";
+import { GenerateContentExport, GetAvailableFields } from "@/services/contentExportUtil";
 import { convertStringToGuid, hasWindow, validateGuid } from "@/utils/helpers";
 import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Select, Icon, AlertIcon } from "@chakra-ui/react";
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from "react";
@@ -260,11 +260,6 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       setCurrentTemplateSelections(selectedItems);
     }
   };
-
-  const getInheritors = async () => {
-    const results = GetInheritorTemplates(appContext, client, templates)
-    console.log(results);
-  }
 
   const browseFields = async () => {
     setAvailableFields([]);
@@ -546,10 +541,6 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                       Enter template GUIDs separated by commas. Leave blank to include all templates.
                     </AlertDescription>
                   </Alert>
-
-                  {/* REMOVE THIS AFTER TESTING */}
-                  <Button onClick={getInheritors}>Get Inheritors</Button>
-
                 </Stack>
 
                 <Stack spacing='2'>
