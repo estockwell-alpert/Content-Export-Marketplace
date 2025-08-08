@@ -172,6 +172,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     setErrorTemplates(false);
     setIncludeTemplate(false);
     setAvailableFields([]);
+    setInheritors(false);
 
     // browse modals
     setCurrentSelections([]);
@@ -323,7 +324,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       createdDate: createdDate,
       updatedBy: updatedBy,
       updatedDate: updatedDate,
-      allFieldsCheckbox: allFields
+      allFieldsCheckbox: allFields,
+      inheritors: inheritors
     };
 
     // check if setting with name already exists
@@ -369,6 +371,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     setUpdatedDate(setting.updatedDate);
     setConvertGuids(setting.convertGuids);
     setAllFields(setting.allFieldsCheckbox);
+    setInheritors(setting.inheritors);
   };
 
   return (
