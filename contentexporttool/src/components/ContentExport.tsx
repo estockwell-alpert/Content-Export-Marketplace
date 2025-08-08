@@ -692,7 +692,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                 <Alert variant="default" className="mt-2">
                   <AlertDescription className="text-xs">
                     By default, all fields are exported as raw values. Check this box to export the Name of linked
-                    items instead of Guid ID
+                    items instead of Guid ID. Note that this data is informational and NOT valid for Import
                   </AlertDescription>
                 </Alert>
               </Stack>

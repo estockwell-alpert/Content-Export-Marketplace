@@ -264,8 +264,7 @@ export const ProcessFieldValue = async (
         // make GQL request
         const linkedItemResults = await makeGraphQLQuery(appContext, client, linkedItemsQueryString);
 
-        let linkedItemResult = linkedItemResults;
-        linkedItemResult = linkedItemResults[0]?.innerItem;
+        const linkedItemResult = linkedItemResults.data.data.search.results[0].innerItem;
 
         const itemName = linkedItemResult?.name;
         guidFieldDictionary[fieldValue] = itemName;
