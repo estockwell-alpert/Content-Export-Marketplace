@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IContentNode } from "@/models/IContentNode";
 import { ISettings } from "@/models/ISettings";
-import { GenerateContentExport, GetAvailableFields } from "@/services/contentExportUtil";
+import { GenerateContentExport, GetAvailableFields, GetInheritorTemplates } from "@/services/contentExportUtil";
 import { convertStringToGuid, hasWindow, validateGuid } from "@/utils/helpers";
 import { Card, CardHeader, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Select, Icon, AlertIcon } from "@chakra-ui/react";
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from "react";
@@ -36,6 +36,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   const [convertGuids, setConvertGuids] = useState<boolean>();
   const [includeTemplate, setIncludeTemplate] = useState<boolean>();
   const [allFields, setAllFields] = useState<boolean>();
+  const [inheritors, setInheritors] = useState<boolean>();
   const [includeLang, setIncludeLang] = useState<boolean>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [savedSettings, setSavedSettings] = useState<ISettings[]>([]);
@@ -203,6 +204,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       client,
       startItem,
       templates,
+      inheritors,
       itemFields,
       languages,
       includeTemplate,
@@ -258,6 +260,11 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       setCurrentTemplateSelections(selectedItems);
     }
   };
+
+  const getInheritors = async () => {
+    const results = GetInheritorTemplates(appContext, client, templates)
+    console.log(results);
+  }
 
   const browseFields = async () => {
     setAvailableFields([]);
@@ -525,14 +532,26 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                       </AlertDescription>
                     </Alert>
                   )}
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id={`checkbox-template`}
+                      checked={inheritors}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => setInheritors(event.target.checked === true)}
+                      className="mr-2"
+                    />
+                    <span className="flex-grow">Include items that inherit these templates</span>
+                  </div>
                   <Alert variant="default" className="mt-2">
                     <AlertDescription className="text-xs">
                       Enter template GUIDs separated by commas. Leave blank to include all templates.
                     </AlertDescription>
                   </Alert>
+
+                  {/* REMOVE THIS AFTER TESTING */}
+                  <Button onClick={getInheritors}>Get Inheritors</Button>
+
                 </Stack>
 
-                {/* Languages -- eventually replace with a dropdown connected to a GQL language query */}
                 <Stack spacing='2'>
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium">Language</label>
