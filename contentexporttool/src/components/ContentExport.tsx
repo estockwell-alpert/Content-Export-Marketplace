@@ -29,15 +29,15 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   const [fields, setFields] = useState<string>();
   const [languages, setLanguages] = useState<string>();
   const [selectedLanguageIndex, setSelectedLanguageIndex] = useState<number>();
-  const [createdDate, setCreatedDate] = useState<boolean>();
-  const [createdBy, setCreatedBy] = useState<boolean>();
-  const [updatedDate, setUpdatedDate] = useState<boolean>();
-  const [updatedBy, setUpdatedBy] = useState<boolean>();
-  const [convertGuids, setConvertGuids] = useState<boolean>();
-  const [includeTemplate, setIncludeTemplate] = useState<boolean>();
-  const [allFields, setAllFields] = useState<boolean>();
-  const [inheritors, setInheritors] = useState<boolean>();
-  const [includeLang, setIncludeLang] = useState<boolean>();
+  const [createdDate, setCreatedDate] = useState<boolean>(false);
+  const [createdBy, setCreatedBy] = useState<boolean>(false);
+  const [updatedDate, setUpdatedDate] = useState<boolean>(false);
+  const [updatedBy, setUpdatedBy] = useState<boolean>(false);
+  const [convertGuids, setConvertGuids] = useState<boolean>(false);
+  const [includeTemplate, setIncludeTemplate] = useState<boolean>(false);
+  const [allFields, setAllFields] = useState<boolean>(false);
+  const [inheritors, setInheritors] = useState<boolean>(false);
+  const [includeLang, setIncludeLang] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [savedSettings, setSavedSettings] = useState<ISettings[]>([]);
   const [availableFields, setAvailableFields] = useState<string[]>();
@@ -173,6 +173,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     setIncludeTemplate(false);
     setAvailableFields([]);
     setInheritors(false);
+    setAllFields(false);
 
     // browse modals
     setCurrentSelections([]);
@@ -325,7 +326,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       updatedBy: updatedBy,
       updatedDate: updatedDate,
       allFieldsCheckbox: allFields,
-      inheritors: inheritors
+      inheritors: inheritors,
+      convertGuids: convertGuids
     };
 
     // check if setting with name already exists
@@ -363,15 +365,15 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     setTemplates(setting.templates ?? '');
     setFields(setting.fields);
     setLanguages(setting.languages);
-    setIncludeLang(setting.includeLang);
-    setIncludeTemplate(setting.includeTemplate);
-    setCreatedBy(setting.createdBy);
-    setCreatedDate(setting.createdDate);
-    setUpdatedBy(setting.updatedBy);
-    setUpdatedDate(setting.updatedDate);
-    setConvertGuids(setting.convertGuids);
-    setAllFields(setting.allFieldsCheckbox);
-    setInheritors(setting.inheritors);
+    setIncludeLang(setting.includeLang ?? false);
+    setIncludeTemplate(setting.includeTemplate ?? false);
+    setCreatedBy(setting.createdBy ?? false);
+    setCreatedDate(setting.createdDate ?? false);
+    setUpdatedBy(setting.updatedBy ?? false);
+    setUpdatedDate(setting.updatedDate ?? false);
+    setConvertGuids(setting.convertGuids ?? false);
+    setAllFields(setting.allFieldsCheckbox ?? false);
+    setInheritors(setting.inheritors ?? false);
   };
 
   return (
@@ -533,7 +535,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                   <div className="flex items-center gap-2">
                     <Checkbox
                       id={`checkbox-template`}
-                      checked={inheritors}
+                      isChecked={inheritors}
                       onChange={(event: ChangeEvent<HTMLInputElement>) => setInheritors(event.target.checked === true)}
                       className="mr-2"
                     />
@@ -601,7 +603,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                 <div className="flex items-center gap-2">
                   <Checkbox
                     id={`checkbox-template`}
-                    checked={allFields}
+                    isChecked={allFields}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setAllFields(event.target.checked === true)}
                     className="mr-2"
                   />
@@ -620,7 +622,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                 <div className="flex items-center gap-2">
                   <Checkbox
                     id={`checkbox-template`}
-                    checked={includeTemplate}
+                    isChecked={includeTemplate}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setIncludeTemplate(event.target.checked === true)}
                     className="mr-2"
                   />
@@ -630,7 +632,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                 <div className="flex items-center gap-2">
                   <Checkbox
                     id={`checkbox-lang`}
-                    checked={includeLang}
+                    isChecked={includeLang}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setIncludeLang(event.target.checked === true)}
                     className="mr-2"
                   />
@@ -640,7 +642,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                 <div className="flex items-center gap-2">
                   <Checkbox
                     id={`checkbox-created`}
-                    checked={createdDate}
+                    isChecked={createdDate}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setCreatedDate(event.target.checked === true)}
                     className="mr-2"
                   />
@@ -650,7 +652,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                 <div className="flex items-center gap-2">
                   <Checkbox
                     id={`checkbox-createdBy`}
-                    checked={createdBy}
+                    isChecked={createdBy}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setCreatedBy(event.target.checked === true)}
                     className="mr-2"
                   />
@@ -660,7 +662,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                 <div className="flex items-center gap-2">
                   <Checkbox
                     id={`checkbox-updatedDate`}
-                    checked={updatedDate}
+                    isChecked={updatedDate}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setUpdatedDate(event.target.checked === true)}
                     className="mr-2"
                   />
@@ -670,7 +672,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                 <div className="flex items-center gap-2">
                   <Checkbox
                     id={`checkbox-updatedBy`}
-                    checked={updatedBy}
+                    isChecked={updatedBy}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setUpdatedBy(event.target.checked === true)}
                     className="mr-2"
                   />
@@ -683,7 +685,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                 <div className="flex items-center gap-2">
                   <Checkbox
                     id={`checkbox-convertGuids`}
-                    checked={convertGuids}
+                    isChecked={convertGuids}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setConvertGuids(event.target.checked === true)}
                     className="mr-2"
                   />

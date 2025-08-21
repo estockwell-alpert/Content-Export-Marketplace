@@ -140,7 +140,7 @@ export const SaveSettingsModal = ({ open, onOpenChange, onSubmit, emptySettings 
                               >
                                 Cancel
                               </Button>
-                              <Button colorScheme="warning" type="submit">Yes, Overwrite</Button>
+                              <Button colorScheme="warning" onClick={handleSubmit}>Yes, Overwrite</Button>
                             </Wrap>
                           </Stack>
                         </>
