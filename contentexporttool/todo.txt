@@ -17,9 +17,10 @@ Make button ribbon sticky ✓
 Import - add additional code to make importing easier
  > Convert raw media paths/GUIDs to image tags?
  > Convert path to ID? 
- > Export linked item names/IDs?
+ > Export linked item names/IDs? ✓
  
  Checkbox for Inherited Templates ✓
+ > Should I add the referrer templates to Browse Fields?
 
  Export Linked Items - it's currently translating GUID to item name, but we should ALSO export the GUID and make name an option (or make Guid an option)
 

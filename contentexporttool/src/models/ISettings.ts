@@ -14,4 +14,5 @@ export interface ISettings {
   updatedBy?: boolean;
   convertGuids?: boolean;
   allFieldsCheckbox?: boolean;
+  inheritors?: boolean;
 }
