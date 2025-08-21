@@ -9,6 +9,7 @@ export const GenerateContentExport = async (
   client: ClientSDK | null,
   startItem?: string,
   templates?: string,
+  inheritors?: boolean,
   fields?: string,
   languages?: string,
   includeTemplate?: boolean,
@@ -36,6 +37,13 @@ export const GenerateContentExport = async (
   let results: any[] = [];
   const cursor = '';
   //let calls = 0;
+
+  // get inheritor templates
+  if (inheritors && templates && templates !== "") {
+    const allTemplates = await GetInheritorTemplates(appContext, client, templates);
+    templates = allTemplates.join(", ");
+    includeTemplate = true;
+  }
 
   // generate query
   const querystring = GetSearchQuery(startItem, templates, fields, languages, cursor, allFields);
@@ -256,8 +264,7 @@ export const ProcessFieldValue = async (
         // make GQL request
         const linkedItemResults = await makeGraphQLQuery(appContext, client, linkedItemsQueryString);
 
-        let linkedItemResult = linkedItemResults;
-        linkedItemResult = linkedItemResults[0]?.innerItem;
+        const linkedItemResult = linkedItemResults.data.data.search.results[0].innerItem;
 
         const itemName = linkedItemResult?.name;
         guidFieldDictionary[fieldValue] = itemName;
@@ -309,6 +316,44 @@ export const GetItemChildren = async (
   console.log(results);
 
   return results;
+};
+
+export const GetInheritorTemplates = async (
+  appContext: any,
+  client: ClientSDK | null,
+  templateString?: string): Promise<string[]> => {
+
+  const selectedTemplates = templateString?.split(',').map(x => x.trim().toLowerCase());
+  if (!selectedTemplates || selectedTemplates.length === 0) {
+    return [];
+  }
+
+  // add our base templates to the return list
+  const inheritors: string[] = selectedTemplates;
+
+  // get all templates
+  const templatesFolderId = "{3C1715FE-6A13-4FCF-845F-DE308BA9741D}";
+  const templateTemplateId = "{AB86861A-6030-46C5-B394-E8F99E8B87DB}"
+  const allTemplatesQuery = GetSchemaQuery(templatesFolderId, templateTemplateId);
+  const response = await makeGraphQLQuery(appContext, client, allTemplatesQuery);
+  const templateResults = response?.data?.data?.search?.results ?? response?.results;
+
+  // filter through templates to get templates that include our base templates
+  for (let i = 0; i < templateResults.length; i++) {
+    const template = templateResults[i];
+    const baseTemplates = template.innerItem.baseTemplate.value.toLowerCase();
+
+    for (let j = 0; j < selectedTemplates?.length; j++) {
+      if (baseTemplates.indexOf(selectedTemplates[j]) > -1) {
+        inheritors.push(template.innerItem.itemId);
+        break;
+      }
+    }
+  }
+
+  // save inheritors for template ID in cache
+  console.log(inheritors);
+  return inheritors;
 };
 
 export const GetAvailableFields = async (

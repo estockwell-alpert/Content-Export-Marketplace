@@ -36,6 +36,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   const [convertGuids, setConvertGuids] = useState<boolean>();
   const [includeTemplate, setIncludeTemplate] = useState<boolean>();
   const [allFields, setAllFields] = useState<boolean>();
+  const [inheritors, setInheritors] = useState<boolean>();
   const [includeLang, setIncludeLang] = useState<boolean>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [savedSettings, setSavedSettings] = useState<ISettings[]>([]);
@@ -171,6 +172,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     setErrorTemplates(false);
     setIncludeTemplate(false);
     setAvailableFields([]);
+    setInheritors(false);
 
     // browse modals
     setCurrentSelections([]);
@@ -203,6 +205,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       client,
       startItem,
       templates,
+      inheritors,
       itemFields,
       languages,
       includeTemplate,
@@ -321,7 +324,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       createdDate: createdDate,
       updatedBy: updatedBy,
       updatedDate: updatedDate,
-      allFieldsCheckbox: allFields
+      allFieldsCheckbox: allFields,
+      inheritors: inheritors
     };
 
     // check if setting with name already exists
@@ -367,6 +371,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     setUpdatedDate(setting.updatedDate);
     setConvertGuids(setting.convertGuids);
     setAllFields(setting.allFieldsCheckbox);
+    setInheritors(setting.inheritors);
   };
 
   return (
@@ -525,6 +530,15 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                       </AlertDescription>
                     </Alert>
                   )}
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id={`checkbox-template`}
+                      checked={inheritors}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => setInheritors(event.target.checked === true)}
+                      className="mr-2"
+                    />
+                    <span className="flex-grow">Include items that inherit these templates</span>
+                  </div>
                   <Alert variant="default" className="mt-2">
                     <AlertDescription className="text-xs">
                       Enter template GUIDs separated by commas. Leave blank to include all templates.
@@ -532,7 +546,6 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                   </Alert>
                 </Stack>
 
-                {/* Languages -- eventually replace with a dropdown connected to a GQL language query */}
                 <Stack spacing='2'>
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium">Language</label>
@@ -679,7 +692,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                 <Alert variant="default" className="mt-2">
                   <AlertDescription className="text-xs">
                     By default, all fields are exported as raw values. Check this box to export the Name of linked
-                    items instead of Guid ID
+                    items instead of Guid ID. Note that this data is informational and NOT valid for Import
                   </AlertDescription>
                 </Alert>
               </Stack>
