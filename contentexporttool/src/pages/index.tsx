@@ -7,6 +7,7 @@ import { ExportTool } from "@/components/ContentExport";
 import { TabsContent, TabsList, TabsTrigger, Tabs } from "@/ui/tabs";
 import { ImportTool } from "@/components/ContentImport";
 import { GetLanguages } from "@/services/contentExportUtil";
+import { ManageSavedSettings } from "@/components/SavedSettings";
 
 export default function Home() {
 
@@ -76,12 +77,15 @@ export default function Home() {
 
 
             <Tabs defaultValue={'export'} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 border-b border-border">
-                <TabsTrigger value="export" className="">
+              <TabsList className="flex w-full border-b border-border">
+                <TabsTrigger value="export" className="grow">
                   Export
                 </TabsTrigger>
-                <TabsTrigger value="import" className="">
+                <TabsTrigger value="import" className="grow">
                   Import
+                </TabsTrigger>
+                <TabsTrigger value="savedsettings" className="grow">
+                  Manage Saved Settings
                 </TabsTrigger>
               </TabsList>
 
@@ -99,6 +103,13 @@ export default function Home() {
               </TabsContent>
               <TabsContent value="import">
                 <ImportTool appContext={applicationContext} client={client} />
+              </TabsContent>
+              <TabsContent value="savedsettings">
+
+                <div className="savedSettings">
+                  <ManageSavedSettings />
+                </div>
+
               </TabsContent>
             </Tabs>
 

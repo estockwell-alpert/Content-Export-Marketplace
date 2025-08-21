@@ -15,4 +15,5 @@ export interface ISettings {
   convertGuids?: boolean;
   allFieldsCheckbox?: boolean;
   inheritors?: boolean;
+  [key: string]: string | boolean | undefined;
 }
