@@ -64,7 +64,8 @@ export const stripGuid = (id: string) => {
 };
 
 export const makeGraphQLQuery = async (appContext: any, client: ClientSDK | null, query: string): Promise<any> => {
-  const sitecoreContextId = appContext.resources?.[0]?.context.preview;
+  const sitecoreContextId = appContext.resourceAccess?.[0].context.preview;
+
   if (!sitecoreContextId) {
     const error = "Context ID not found. Make sure your app is configured to use XM Cloud APIs.";
     console.error(
