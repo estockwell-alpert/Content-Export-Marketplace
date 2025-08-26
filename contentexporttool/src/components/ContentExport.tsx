@@ -11,7 +11,7 @@ import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client"
 import { SaveSettingsModal } from "./SaveSettingsModal";
 import { FieldBrowseModal } from "./FieldBrowseModal";
 import { AuthorInfo } from "./AuthorInfo";
-import { mdiTrayArrowDown } from '@mdi/js'
+import { mdiChevronDown, mdiChevronUp, mdiTrayArrowDown } from '@mdi/js'
 import React from "react";
 
 interface ExportToolProps {
@@ -55,6 +55,13 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   const [navHeight, setNavHeight] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [error, setError] = useState<boolean>(false);
+  const filtersEl = useRef<HTMLDivElement>(null);
+  const [filtersOpen, setFiltersOpen] = useState<boolean>(true);
+  const [filtersHeight, setFiltersHeight] = useState<number>(0);
+  const dataEl = useRef<HTMLDivElement>(null);
+  const [dataOpen, setDataOpen] = useState<boolean>(true);
+  const [dataHeight, setDataHeight] = useState<number>(0);
+
 
   /**
  * Make the nav stick to top of window if scrolled down
@@ -76,6 +83,11 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     }
   };
 
+  const handleResize = () => {
+    calculateSectionHeight(filtersEl, filtersHeight, setFiltersHeight, true);
+    calculateSectionHeight(dataEl, dataHeight, setDataHeight, true);
+  }
+
   const scrollCallback = useCallback(handleScroll, [isSticky, navHeight, stickyFooterEl]);
 
   const calculateNavHeight = useCallback(
@@ -91,22 +103,51 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     [mainHeaderEl, navHeight]
   );
 
-  useEffect(() => {
-    calculateNavHeight();
-  }, [calculateNavHeight]);
+  const calculateSectionHeight = useCallback((ref: React.RefObject<HTMLDivElement | null>, height: number, setter: React.Dispatch<React.SetStateAction<number>>, reset = false) => {
+    if (
+      ref?.current &&
+      ref?.current?.clientHeight &&
+      (height == 0 || reset)
+    ) {
+      setter(ref?.current?.clientHeight);
+      // set height explicitly for first collapse
+      if (height > 0) {
+        ref.current.style.height = height + "px";
+      }
+    }
+  }, []);
+
+  const resizeCallback = useCallback(handleResize, [calculateSectionHeight, dataHeight, filtersHeight]);
 
   useEffect(() => {
     calculateNavHeight(true);
-  }, [calculateNavHeight]);
+    calculateSectionHeight(filtersEl, filtersHeight, setFiltersHeight, true);
+    calculateSectionHeight(dataEl, dataHeight, setDataHeight, true);
+  }, [calculateNavHeight, calculateSectionHeight, dataHeight, filtersHeight]);
 
+  // set window listeners
   useEffect(() => {
     if (!hasWindow()) return;
 
     window.addEventListener('scroll', scrollCallback);
+    window.addEventListener('resize', resizeCallback)
     return () => {
       window.removeEventListener('scroll', scrollCallback);
+      window.removeEventListener('resize', resizeCallback);
     };
   });
+
+  const toggleSection = (ref: React.RefObject<HTMLDivElement | null>, isOpen: boolean, height: number, setter: React.Dispatch<React.SetStateAction<boolean>>) => {
+    if (ref && ref?.current) {
+      if (isOpen) {
+        ref.current.style.height = "0";
+      } else {
+        ref.current.style.height = height + "px";
+      }
+
+      setter(!isOpen);
+    }
+  }
 
   const sitecoreRootId = '{11111111-1111-1111-1111-111111111111}-root';
 
@@ -468,236 +509,254 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
               <AlertDescription>Something went wrong: {errorMessage}</AlertDescription>
             </Alert>}
             <Card variant="filled" className="rounded-sm border bg-card p-6">
-              <Heading size="lg">Filters</Heading >
+              <Stack spacing="6">
+                <Wrap align="center">
+                  <Heading size="lg">Filters</Heading >
+                  <Button variant="ghost" onClick={() => toggleSection(filtersEl, filtersOpen, filtersHeight, setFiltersOpen)} >
+                    <Icon><path d={filtersOpen ? mdiChevronUp : mdiChevronDown} /></Icon>
+                  </Button>
+                </Wrap>
+              </Stack>
               {/* Start Items Section */}
+              <div ref={filtersEl} className="toggleSection">
+                <Stack spacing='6'>
+                  <Stack spacing='2'>
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium">Start Item(s)</label>
+                      <div className="flex items-center gap-2 mt-4">
+                        <Button size="sm" onClick={() => setBrowseContentOpen(true)}>
+                          Browse
+                        </Button>
 
-              <Stack spacing='6'>
-                <Stack spacing='2'>
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium">Start Item(s)</label>
-                    <div className="flex items-center gap-2 mt-4">
-                      <Button size="sm" onClick={() => setBrowseContentOpen(true)}>
-                        Browse
-                      </Button>
-
-                      <Button variant="ghost" size="sm" onClick={() => clearStartItem()}>
-                        Clear
-                      </Button>
+                        <Button variant="ghost" size="sm" onClick={() => clearStartItem()}>
+                          Clear
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                  <Textarea
-                    value={startItem}
-                    onChange={handleStartItem}
-                    placeholder="e.g. {D4D93D21-A8B4-4C0F-8025-251A38D9A04D}"
-                    className={'font-mono text-sm ' + (errorStartItem ? 'error' : '')}
-                  />
-                  {errorStartItem && (
+                    <Textarea
+                      value={startItem}
+                      onChange={handleStartItem}
+                      placeholder="e.g. {D4D93D21-A8B4-4C0F-8025-251A38D9A04D}"
+                      className={'font-mono text-sm ' + (errorStartItem ? 'error' : '')}
+                    />
+                    {errorStartItem && (
+                      <Alert variant="default" className="mt-2">
+                        <AlertDescription className="text-xs error">
+                          Invalid start item. Start items must be entered as GUID IDs
+                        </AlertDescription>
+                      </Alert>
+                    )}
                     <Alert variant="default" className="mt-2">
-                      <AlertDescription className="text-xs error">
-                        Invalid start item. Start items must be entered as GUID IDs
+                      <AlertDescription className="text-xs">
+                        Enter GUIDs of starting nodes separated by commas. Only content beneath these nodes will be
+                        exported.
                       </AlertDescription>
                     </Alert>
-                  )}
-                  <Alert variant="default" className="mt-2">
-                    <AlertDescription className="text-xs">
-                      Enter GUIDs of starting nodes separated by commas. Only content beneath these nodes will be
-                      exported.
-                    </AlertDescription>
-                  </Alert>
+                  </Stack>
+
+                  {/* Templates Section */}
+                  <Stack spacing='2'>
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium">Templates</label>
+                      <div className="flex items-center gap-2 mt-4">
+                        <Button size="sm" onClick={() => setBrowseTemplatesOpen(true)}>
+                          Browse
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => setTemplates('')}>
+                          Clear
+                        </Button>
+                      </div>
+                    </div>
+                    <Textarea
+                      value={templates}
+                      onChange={handleTemplates}
+                      placeholder="e.g. {CC92A3D8-105C-4016-8BD7-22162C1ED919}"
+                      className={'font-mono text-sm ' + (errorTemplates ? 'error' : '')}
+                    />
+                    {errorTemplates && (
+                      <Alert variant="default" className="mt-2">
+                        <AlertDescription className="text-xs error">
+                          Invalid template. Templates must be entered as GUID IDs
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={`checkbox-template`}
+                        isChecked={inheritors}
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => setInheritors(event.target.checked === true)}
+                        className="mr-2"
+                      />
+                      <span className="flex-grow">Include items that inherit these templates</span>
+                    </div>
+                    <Alert variant="default" className="mt-2">
+                      <AlertDescription className="text-xs">
+                        Enter template GUIDs separated by commas. Leave blank to include all templates.
+                      </AlertDescription>
+                    </Alert>
+                  </Stack>
+
+                  <Stack spacing='2'>
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium">Language</label>
+
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="sm" onClick={() => { setLanguages(''); setSelectedLanguageIndex(0) }}>
+                          Clear
+                        </Button>
+                      </div>
+                    </div>
+                    <Select className={selectedLanguageIndex === 0 ? "unselected" : ""} value={languages} onChange={handleSetLanguage}>
+                      <option value="" key="0">--</option>
+                      {siteLanguages.sort().map((lang, index) => (
+                        <option key={index} value={lang}>
+                          {lang}
+                        </option>
+                      ))}
+                    </Select>
+                  </Stack>
                 </Stack>
-
-                {/* Templates Section */}
+              </div>
+            </Card>
+            <Card variant="filled" className="rounded-sm border bg-card p-6">
+              <Stack spacing="6">
+                <Wrap align="center">
+                  <Heading size="lg">Data</Heading>
+                  <Button variant="ghost" onClick={() => toggleSection(dataEl, dataOpen, dataHeight, setDataOpen)} >
+                    <Icon><path d={dataOpen ? mdiChevronUp : mdiChevronDown} /></Icon>
+                  </Button>
+                </Wrap>
+              </Stack>
+              {/* Start Items Section */}
+              <div ref={dataEl} className="toggleSection">
+                {/* Fields Section */}
                 <Stack spacing='2'>
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium">Templates</label>
-                    <div className="flex items-center gap-2 mt-4">
-                      <Button size="sm" onClick={() => setBrowseTemplatesOpen(true)}>
+                    <label className="text-sm font-medium">Fields</label>
+                    <div className="flex items-center gap-2">
+
+                      <Button disabled={templates === ''} size="sm" onClick={() => browseFields()}>
+
                         Browse
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => setTemplates('')}>
+                      <Button variant="ghost" size="sm" onClick={() => setFields('')}>
                         Clear
                       </Button>
                     </div>
                   </div>
                   <Textarea
-                    value={templates}
-                    onChange={handleTemplates}
-                    placeholder="e.g. {CC92A3D8-105C-4016-8BD7-22162C1ED919}"
-                    className={'font-mono text-sm ' + (errorTemplates ? 'error' : '')}
+                    value={fields}
+                    onChange={handleFields}
+                    placeholder="e.g. title, image, taxonomies"
+                    className="text-sm"
                   />
-                  {errorTemplates && (
+                  {templates === '' &&
                     <Alert variant="default" className="mt-2">
-                      <AlertDescription className="text-xs error">
-                        Invalid template. Templates must be entered as GUID IDs
+                      <AlertDescription className="text-xs">
+                        Select at least one template to browse fields
                       </AlertDescription>
                     </Alert>
-                  )}
+                  }
+
                   <div className="flex items-center gap-2">
                     <Checkbox
                       id={`checkbox-template`}
-                      isChecked={inheritors}
-                      onChange={(event: ChangeEvent<HTMLInputElement>) => setInheritors(event.target.checked === true)}
+                      isChecked={allFields}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => setAllFields(event.target.checked === true)}
                       className="mr-2"
                     />
-                    <span className="flex-grow">Include items that inherit these templates</span>
+                    <span className="flex-grow">Export all fields</span>
                   </div>
-                  <Alert variant="default" className="mt-2">
-                    <AlertDescription className="text-xs">
-                      Enter template GUIDs separated by commas. Leave blank to include all templates.
-                    </AlertDescription>
-                  </Alert>
-                </Stack>
 
-                <Stack spacing='2'>
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium">Language</label>
+                  <div className="">
 
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => { setLanguages(''); setSelectedLanguageIndex(0) }}>
-                        Clear
-                      </Button>
-                    </div>
+                    <FieldBrowseModal availableFields={availableFields ?? []} fields={fields} setFields={setFields} setBrowseContentOpen={setBrowseFieldsOpen} browseContentOpen={browseFieldsOpen}></FieldBrowseModal>
                   </div>
-                  <Select className={selectedLanguageIndex === 0 ? "unselected" : ""} value={languages} onChange={handleSetLanguage}>
-                    <option value="" key="0">--</option>
-                    {siteLanguages.sort().map((lang, index) => (
-                      <option key={index} value={lang}>
-                        {lang}
-                      </option>
-                    ))}
-                  </Select>
-                </Stack>
-              </Stack>
-            </Card>
-            <Card variant="filled" className="rounded-sm border bg-card p-6">
-              <Heading size="lg">Data</Heading>
-              {/* Fields Section */}
-              <Stack spacing='2'>
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Fields</label>
+
+                  {/* to do: make collapsible, fix to work fully with Edge */}
+                  <div className="flex items-center justify-between mt-4">
+                    <label className="text-sm font-medium">Standard Fields</label>
+                  </div>
                   <div className="flex items-center gap-2">
-
-                    <Button disabled={templates === ''} size="sm" onClick={() => browseFields()}>
-
-                      Browse
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => setFields('')}>
-                      Clear
-                    </Button>
+                    <Checkbox
+                      id={`checkbox-template`}
+                      isChecked={includeTemplate}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => setIncludeTemplate(event.target.checked === true)}
+                      className="mr-2"
+                    />
+                    <span className="flex-grow">Template</span>
                   </div>
-                </div>
-                <Textarea
-                  value={fields}
-                  onChange={handleFields}
-                  placeholder="e.g. title, image, taxonomies"
-                  className="text-sm"
-                />
-                {templates === '' &&
+
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id={`checkbox-lang`}
+                      isChecked={includeLang}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => setIncludeLang(event.target.checked === true)}
+                      className="mr-2"
+                    />
+                    <span className="flex-grow">Language</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id={`checkbox-created`}
+                      isChecked={createdDate}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => setCreatedDate(event.target.checked === true)}
+                      className="mr-2"
+                    />
+                    <span className="flex-grow">Created Date</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id={`checkbox-createdBy`}
+                      isChecked={createdBy}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => setCreatedBy(event.target.checked === true)}
+                      className="mr-2"
+                    />
+                    <span className="flex-grow">Created By</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id={`checkbox-updatedDate`}
+                      isChecked={updatedDate}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => setUpdatedDate(event.target.checked === true)}
+                      className="mr-2"
+                    />
+                    <span className="flex-grow">Updated Date</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id={`checkbox-updatedBy`}
+                      isChecked={updatedBy}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => setUpdatedBy(event.target.checked === true)}
+                      className="mr-2"
+                    />
+                    <span className="flex-grow">Updated By</span>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-4">
+                    <label className="text-sm font-medium">Options</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id={`checkbox-convertGuids`}
+                      isChecked={convertGuids}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => setConvertGuids(event.target.checked === true)}
+                      className="mr-2"
+                    />
+                    <span className="flex-grow">Export Linked Item Names</span>
+                  </div>
                   <Alert variant="default" className="mt-2">
                     <AlertDescription className="text-xs">
-                      Select at least one template to browse fields
+                      By default, all fields are exported as raw values. Check this box to export the Name of linked
+                      items instead of Guid ID. Note that this data is informational and NOT valid for Import
                     </AlertDescription>
                   </Alert>
-                }
-
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id={`checkbox-template`}
-                    isChecked={allFields}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => setAllFields(event.target.checked === true)}
-                    className="mr-2"
-                  />
-                  <span className="flex-grow">Export all fields</span>
-                </div>
-
-                <div className="">
-
-                  <FieldBrowseModal availableFields={availableFields ?? []} fields={fields} setFields={setFields} setBrowseContentOpen={setBrowseFieldsOpen} browseContentOpen={browseFieldsOpen}></FieldBrowseModal>
-                </div>
-
-                {/* to do: make collapsible, fix to work fully with Edge */}
-                <div className="flex items-center justify-between mt-4">
-                  <label className="text-sm font-medium">Standard Fields</label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id={`checkbox-template`}
-                    isChecked={includeTemplate}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => setIncludeTemplate(event.target.checked === true)}
-                    className="mr-2"
-                  />
-                  <span className="flex-grow">Template</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id={`checkbox-lang`}
-                    isChecked={includeLang}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => setIncludeLang(event.target.checked === true)}
-                    className="mr-2"
-                  />
-                  <span className="flex-grow">Language</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id={`checkbox-created`}
-                    isChecked={createdDate}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => setCreatedDate(event.target.checked === true)}
-                    className="mr-2"
-                  />
-                  <span className="flex-grow">Created Date</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id={`checkbox-createdBy`}
-                    isChecked={createdBy}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => setCreatedBy(event.target.checked === true)}
-                    className="mr-2"
-                  />
-                  <span className="flex-grow">Created By</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id={`checkbox-updatedDate`}
-                    isChecked={updatedDate}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => setUpdatedDate(event.target.checked === true)}
-                    className="mr-2"
-                  />
-                  <span className="flex-grow">Updated Date</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id={`checkbox-updatedBy`}
-                    isChecked={updatedBy}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => setUpdatedBy(event.target.checked === true)}
-                    className="mr-2"
-                  />
-                  <span className="flex-grow">Updated By</span>
-                </div>
-
-                <div className="flex items-center justify-between mt-4">
-                  <label className="text-sm font-medium">Options</label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id={`checkbox-convertGuids`}
-                    isChecked={convertGuids}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => setConvertGuids(event.target.checked === true)}
-                    className="mr-2"
-                  />
-                  <span className="flex-grow">Export Linked Item Names</span>
-                </div>
-                <Alert variant="default" className="mt-2">
-                  <AlertDescription className="text-xs">
-                    By default, all fields are exported as raw values. Check this box to export the Name of linked
-                    items instead of Guid ID. Note that this data is informational and NOT valid for Import
-                  </AlertDescription>
-                </Alert>
-              </Stack>
+                </Stack>
+              </div>
             </Card>
           </Stack>
 

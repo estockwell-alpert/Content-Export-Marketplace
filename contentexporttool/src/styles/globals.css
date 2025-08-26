@@ -871,3 +871,8 @@ select option {
 .download-btn-wrapper.highlight .chakra-card__body {
   background: #F8D904;
 }
+
+.toggleSection {
+  transition: 1s ease;
+  overflow: hidden;
+}
