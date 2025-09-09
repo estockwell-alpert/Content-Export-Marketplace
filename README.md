@@ -30,6 +30,21 @@ Example files:
 3. Select Update (default) or Create
 4. Click Import
 
+### Terms and Conditions ###
+
+The Sitecore Content Export/Import Tool is a free-to-use tool provided as a courtesy. Users are responsible for understanding the tool and making their own export configurations and import files. Bug reports can be opened on this repo, but we are not responsible for helping users formulate their exports or imports. Documentation is available on our [blog](https://ericastockwellalpert.wordpress.com/2025/08/07/how-to-get-the-most-out-of-the-content-export-import-tool/) for learning how to use the tool.
+
+Since every environment is different, update processes should not be run in a production environment without your team or organization thoroughly testing first. We recommend testing all import processes in a development/staging environment. All users are responsible for their own content, and we are not responsible for any content changes made in error.
+
+### Privacy Policy ###
+
+The Content Export/Import Tool does not save or use any personal data. All user data is retrieved from the Marketplace SDK and is not stored by the Content Export/Import Tool; any persistent settings are saved in localstorage.
+
+### Support ###
+
+To report bugs, [open a new issue on this repo](https://github.com/estockwell-alpert/Content-Export-Marketplace/issues/new)
+
+
 
 This project was started for **Sitecore Hackathon 2025** by team DED (Dan Solovay, Erica Stockwell-Alpert, Dylan Young) at Velir, and completed for Sitecore Marketplace
 
