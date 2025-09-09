@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ITemplateSchema, IWorksheetSchema, IField } from '@/models/Templates';
-import { UpdateQueryTemplate, CreateQueryTemplate } from '@/templates/importQueryTemplates';
+import { UpdateQueryTemplate, CreateQueryTemplate, CreateLanguageVersionQueryTemplate } from '@/templates/importQueryTemplates';
 import { makeGraphQLQuery } from '@/utils/helpers';
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 import * as XLSX from 'xlsx';
@@ -76,40 +76,7 @@ export const PostMutationQuery = async (
             query = query.replace('languageFragment', '');
         }
 
-        let fieldFragments = '';
-        for (const property in row) {
-            // skip core columns
-            const field = property.trim().toLowerCase();
-            if (
-                field === 'item path' ||
-                field === 'template' ||
-                field === 'id' ||
-                field === 'name' ||
-                field === 'language' ||
-                field === ""
-            ) {
-                continue;
-            }
-
-            const value = row[property];
-
-            // skip fields that don't exist
-            if (value.toLowerCase() === "n/a") {
-                continue;
-            }
-
-            const cleanValue = value.replaceAll("\"", "\\\"");
-
-            const fieldFragment =
-                `
-          { name: "` +
-                field +
-                `", value: "` +
-                cleanValue +
-                `" }`;
-
-            fieldFragments += fieldFragment;
-        }
+        const fieldFragments = generateFieldsFragment(row);
 
         query = query.replace('fieldsFragment', fieldFragments);
 
@@ -136,7 +103,39 @@ export const PostMutationQuery = async (
                 for (let j = 0; j < results.data.errors.length; j++) {
                     const error = results.data.errors[j];
                     const csvItemPath = csvData[i]['Item Path'];
-                    errors.push("Error on Line " + (i + 2) + ": " + csvItemPath + " - " + error.message.replace(/[\r\n]+/gm, ' '));
+
+                    // if error is version does not exist and our import file includes Language, then try CreateLanguageVersionQueryTemplate
+                    if (error?.message?.indexOf("does not contain version") > -1 && csvData[i]['Language'] && csvData[i]['ID']) {
+
+                        const languageFragment = `language: "` + csvData[i]['Language'] + `"`;
+                        const createVersionQuery = CreateLanguageVersionQueryTemplate
+                            .replace('pathFragment', csvData[i]['ID'])
+                            .replace('languageFragment', languageFragment)
+
+                        // first create version
+                        const versionResult = await makeGraphQLQuery(appContext, client, createVersionQuery);
+                        console.log(versionResult);
+                        if (versionResult?.data?.errors) {
+                            for (let l = 0; l < versionResult.data.errors.length; l++) {
+                                const secondaryError = versionResult.data.errors[j];
+                                errors.push("Error on Line " + (i + 2) + ": " + csvItemPath + " - " + secondaryError.message.replace(/[\r\n]+/gm, ' '));
+                            }
+                        } else {
+                            // on success, re-run update query
+                            const updateResult = await makeGraphQLQuery(appContext, client, queries[i]);
+                            if (updateResult?.data?.errors) {
+                                for (let l = 0; l < updateResult.data.errors.length; l++) {
+                                    const updateError = updateResult.data.errors[j];
+                                    errors.push("Error on Line " + (i + 2) + ": " + csvItemPath + " - " + updateError.message.replace(/[\r\n]+/gm, ' '));
+                                }
+                            } else {
+                                successfullQueries++;
+                            }
+                        }
+
+                    } else {
+                        errors.push("Error on Line " + (i + 2) + ": " + csvItemPath + " - " + error.message.replace(/[\r\n]+/gm, ' '));
+                    }
                 }
             } else {
                 successfullQueries++;
@@ -173,6 +172,43 @@ export const PostMutationQuery = async (
     return messages;
 };
 
+export const generateFieldsFragment = (row: any) => {
+    let fieldFragments = '';
+    for (const property in row) {
+        // skip core columns
+        const field = property.trim().toLowerCase();
+        if (
+            field === 'item path' ||
+            field === 'template' ||
+            field === 'id' ||
+            field === 'name' ||
+            field === 'language' ||
+            field === ""
+        ) {
+            continue;
+        }
+
+        const value = row[property];
+
+        // skip fields that don't exist
+        if (value.toLowerCase() === "n/a") {
+            continue;
+        }
+
+        const cleanValue = value.replaceAll("\"", "\\\"");
+
+        const fieldFragment =
+            `
+          { name: "` +
+            field +
+            `", value: "` +
+            cleanValue +
+            `" }`;
+
+        fieldFragments += fieldFragment;
+    }
+    return fieldFragments;
+}
 
 export const ResultsToXslx = (templates: ITemplateSchema[], fileName?: string, headers?: string[]) => {
     // Create Excel workbook and worksheet

@@ -45,6 +45,21 @@ mutation {
   }
 }`;
 
+export const CreateLanguageVersionQueryTemplate = `
+mutation CreateItemVersion {
+    addItemVersion(
+        input: {
+            itemId: "pathFragment"
+            languageFragment
+            }
+        )
+        {
+            item {
+                name
+            }
+            }
+        }`;
+
 export const CreateTemplateQuery = gql`
   mutation {
     createItemTemplate(

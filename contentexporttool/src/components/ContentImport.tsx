@@ -204,6 +204,9 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                                         <li>
                                             <strong>Item Path</strong> - Item path string e.g. /sitecore/content/Home
                                         </li>
+                                        <li>
+                                            <strong>ID</strong> - Item ID (required if adding new language version)
+                                        </li>
                                     </ul>
                                     <p>Required CSV columns for new items:</p>
                                     <ul className="list-disc pl-4 space-y-1">
@@ -217,6 +220,13 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                                             <strong>Name</strong> - Item name (string)
                                         </li>
                                     </ul>
+                                    <p>Optional columns:</p>
+                                    <ul className="list-disc pl-4 space-y-1">
+                                        <li>
+                                            <strong>Language</strong> - language code e.g. es-MX
+                                        </li>
+                                        <li>Field columns</li>
+                                    </ul>
 
                                     <Separator />
 
@@ -229,7 +239,8 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                                             <li>
                                                 Supports all field types, formatted as <b>raw values</b>
                                             </li>
-                                            <li>Add Language column for specific versions</li>
+                                            <li>Add Language column to specify language version</li>
+                                            <li>To add new language versions to existing items, use the Update option</li>
                                         </ul>
                                         <h3 className="font-medium">Tips</h3>
                                         <p>
