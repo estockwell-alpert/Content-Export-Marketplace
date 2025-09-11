@@ -279,6 +279,8 @@ export const ProcessFieldValue = async (
   if (fieldValue.indexOf(',') > -1) {
     const cleanFieldValue = fieldValue.replace(/[\n\r\t]/gm, '').replace(/"/g, '""');
     fieldValue = '"' + cleanFieldValue + '"';
+  }else {
+    fieldValue = fieldValue.replaceAll("\n", "\\n").replaceAll("\r", "\\r");
   }
 
   return fieldValue;
