@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IContentNode } from "@/models/IContentNode";
 import { stripGuid } from "@/utils/helpers";
-import { Alert, AlertDescription, AlertIcon, Button } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, Button, Icon } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, FC, useState } from "react";
 import { ContentNode } from "./ContentNode";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
+import { mdiClose } from "@mdi/js";
 
 interface ContentBrowseModalProps {
   appContext: ApplicationContext | null,
@@ -109,12 +110,12 @@ export const ContentBrowseModal: FC<ContentBrowseModalProps> = ({
                       </li>
                     ))}
                 </ul>
-                <Button className="desktop" variant="outline" size="sm" onClick={() => setBrowseContentOpen(false)}>
-                  Close
+                <Button className="desktop" variant="ghost" size="sm" onClick={() => setBrowseContentOpen(false)}>
+                  <Icon><path d={mdiClose} /></Icon>
                 </Button>
               </div>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" size="sm" onClick={() => setCurrentSelections([])}>
+                <Button variant="ghost" size="sm" onClick={() => setCurrentSelections([])}>
                   Clear Selections
                 </Button>
                 <Button variant="solid" size="sm" onClick={confirmSelection}>

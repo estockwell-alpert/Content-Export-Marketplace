@@ -210,7 +210,6 @@ button {
   border: 1px solid #eee;
   border-radius: 8px;
   width: 50%;
-  padding: 8px;
 }
 
 .content-tree .inner {
@@ -264,7 +263,7 @@ button {
 
 .browse-expand {
   position: absolute;
-  color: rgb(38, 148, 192);
+  color: var(--colors-primary-600);
   cursor: pointer;
 }
 
@@ -859,12 +858,7 @@ select option {
     height: var(--sizes-12);
     min-width: var(--sizes-12);
     font-size: var(--fontSizes-md);
-    -webkit-padding-start: var(--space-6);
-    padding-inline-start: var(--space-6);
-    -webkit-padding-end: var(--space-6);
-    padding-inline-end: var(--space-6);
-    background: var(--colors-primary-500);
-    color: var(--colors-chakra-inverse-text);
+    color: var(--colors-primary-500);
 }
 
 .download-btn-wrapper .chakra-card__body {

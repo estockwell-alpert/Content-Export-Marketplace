@@ -194,17 +194,6 @@ export const GenerateContentExport = async (
   const downloadFileName = "ContentExport.csv";
   element.setAttribute("download", downloadFileName);
 
-  // show wrapper
-  if (wrapper) {
-    // scroll to download button and highlight
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-
-    Flash(0, wrapper);
-  }
-
   element.click();
   // remove button after download
   //element.remove();
@@ -279,7 +268,7 @@ export const ProcessFieldValue = async (
   if (fieldValue.indexOf(',') > -1) {
     const cleanFieldValue = fieldValue.replace(/[\n\r\t]/gm, '').replace(/"/g, '""');
     fieldValue = '"' + cleanFieldValue + '"';
-  }else {
+  } else {
     fieldValue = fieldValue.replaceAll("\n", "\\n").replaceAll("\r", "\\r");
   }
 

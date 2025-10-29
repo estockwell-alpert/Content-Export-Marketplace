@@ -3,7 +3,7 @@ import { IContentNode } from "@/models/IContentNode";
 import { ISettings } from "@/models/ISettings";
 import { GenerateContentExport, GetAvailableFields } from "@/services/contentExportUtil";
 import { convertStringToGuid, hasWindow, validateGuid } from "@/utils/helpers";
-import { Card, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Select, Icon, AlertIcon } from "@chakra-ui/react";
+import { Card, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Select, Icon, AlertIcon, useToast } from "@chakra-ui/react";
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from "react";
 import { Root, createRoot } from "react-dom/client";
 import { ContentBrowseModal } from "./ContentBrowseModal";
@@ -11,7 +11,7 @@ import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client"
 import { SaveSettingsModal } from "./SaveSettingsModal";
 import { FieldBrowseModal } from "./FieldBrowseModal";
 import { AuthorInfo } from "./AuthorInfo";
-import { mdiChevronDown, mdiChevronUp, mdiTrayArrowDown } from '@mdi/js'
+import { mdiCheckCircleOutline, mdiChevronDown, mdiChevronUp, mdiTrayArrowDown } from '@mdi/js'
 import React from "react";
 
 interface ExportToolProps {
@@ -62,6 +62,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   const [dataOpen, setDataOpen] = useState<boolean>(true);
   const [dataHeight, setDataHeight] = useState<number>(0);
 
+  const toast = useToast();
 
   /**
  * Make the nav stick to top of window if scrolled down
@@ -259,8 +260,19 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     if (result.error) {
       setError(true);
       setErrorMessage(result.error.detail);
+      toast({
+        description:
+          "Something went wrong. Please check the error message displayed on the page and the console logs",
+        status: "error",
+      })
     } else {
       setError(false);
+      toast({
+        description:
+          "Export complete. Click the Download Report button to download the report (right click and open in new window)",
+        status: "success",
+        isClosable: true,
+      })
     }
   };
 
@@ -470,19 +482,19 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                   Clear All
                 </Button>
               </Wrap>
+              <Wrap spacing="4" align="center" className="download-btn-wrapper hidden" id="downloadBtnWrapper">
+                <span className="flex items-center">
+                  <Icon color="green" className="mr-2"><path d={mdiCheckCircleOutline} /></Icon>
+                  <b>Report generated</b>
+                </span>
+                <a title="Right click and open link in new tab to download report" id="downloadBtn" className="downloadBtn chakra-button" href="javascript:void(0)">
+                  <Icon className="mr-2"><path d={mdiTrayArrowDown} /></Icon> <span>Download Report</span>
+                </a>
+              </Wrap>
             </Stack>
           </div>
         </Stack>
-        <Stack className="download-btn-wrapper hidden" id="downloadBtnWrapper">
-          <Card>
-            <CardBody>
-              <a id="downloadBtn" className="downloadBtn chakra-button" href="javascript:void(0)">
-                <Icon className="mr-2"><path d={mdiTrayArrowDown} /></Icon> <span>Download Report</span>
-              </a>
-              <p className="mt-2">(Right click and open in new tab)</p>
-            </CardBody>
-          </Card>
-        </Stack>
+        <Stack className="grow"></Stack>
         {savedSettings && savedSettings.length > 0 && (
           <Stack>
             <Card variant="filled" className="rounded-sm border bg-card p-6">

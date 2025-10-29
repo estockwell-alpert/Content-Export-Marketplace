@@ -4,7 +4,8 @@
 import { ISettings } from '@/models/ISettings';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/ui/dialog';
 import { FormField, FormItem, FormMessage } from '@/ui/form';
-import { FormLabel, FormControl, Input, Button, Textarea, Card, CardHeader, Heading, CardFooter, CardBody, Stack, Wrap, Alert, AlertDescription, AlertIcon } from '@chakra-ui/react';
+import { FormLabel, FormControl, Input, Button, Textarea, Card, CardHeader, Heading, CardFooter, CardBody, Stack, Wrap, Alert, AlertDescription, AlertIcon, Icon } from '@chakra-ui/react';
+import { mdiClose } from '@mdi/js';
 import { AlertDialog } from '@radix-ui/react-alert-dialog';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
@@ -65,95 +66,97 @@ export const SaveSettingsModal = ({ open, onOpenChange, onSubmit, emptySettings 
   return (
     <>
       <div id="save-settings" className={'save-settings modal ' + (open ? 'open' : '')}>
-        <div className="inner">
-          <Card>
+        <div className="inner px-4 py-4">
+          <div>
+            <Stack spacing="4">
 
-            <CardBody>
-              <Stack spacing="4">
+              <div className="flex items-end justify-between">
                 <Heading>Save Settings</Heading>
+                <Button className="desktop" variant="ghost" size="sm" onClick={() => cancelSave()}>
+                  <Icon><path d={mdiClose} /></Icon>
+                </Button>
+              </div>
 
+              {saved ? (
+                <Wrap align="center">
+                  <Alert status="success">
 
-                {saved ? (
-                  <Wrap align="center">
-                    <Alert status="success">
+                    <AlertIcon />
+                    <AlertDescription>Your settings have been saved!</AlertDescription>
 
-                      <AlertIcon />
-                      <AlertDescription>Your settings have been saved!</AlertDescription>
+                  </Alert>
+                  <Button
+                    type="button"
+                    variant="solid"
+                    onClick={() => {
+                      cancelSave();
+                    }}
+                  >
+                    Close
+                  </Button>
+                </Wrap>
+              ) :
+                (
+                  <>
+                    <label>Enter a name for the settings</label>
+                    <Input
+                      value={saveName}
+                      aria-label="Enter a name for the settings"
+                      type="text"
+                      onChange={(e) => setSaveName(e.target.value)}
+                      placeholder="e.g. Whitepapers Export"
+                      className={'font-mono text-sm '}
+                    />
 
-                    </Alert>
-                    <Button
-                      type="button"
-                      variant="solid"
-                      onClick={() => {
-                        cancelSave();
-                      }}
-                    >
-                      Close
-                    </Button>
-                  </Wrap>
-                ) :
-                  (
-                    <>
-                      <label>Enter a name for the settings</label>
-                      <Input
-                        value={saveName}
-                        aria-label="Enter a name for the settings"
-                        type="text"
-                        onChange={(e) => setSaveName(e.target.value)}
-                        placeholder="e.g. Whitepapers Export"
-                        className={'font-mono text-sm '}
-                      />
+                    {emptySettings &&
+                      <Alert status="error">
+                        <AlertIcon />
+                        <AlertDescription>You haven&apos;t entered any settings. Are you sure you want to save empty settings?</AlertDescription>
+                      </Alert>}
+                    {!showOverwrite ? (
+                      <Wrap align="center">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            cancelSave();
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button disabled={saveName === null || saveName === ""} onClick={handleSubmit}>Save Settings</Button>
+                      </Wrap>
+                    ) : (
+                      <>
 
-                      {emptySettings &&
-                        <Alert status="error">
+                        <Alert status="warning">
                           <AlertIcon />
-                          <AlertDescription>You haven&apos;t entered any settings. Are you sure you want to save empty settings?</AlertDescription>
-                        </Alert>}
-                      {!showOverwrite ? (
-                        <Wrap align="center">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => {
-                              cancelSave();
-                            }}
-                          >
-                            Cancel
-                          </Button>
-                          <Button disabled={saveName === null || saveName === ""} onClick={handleSubmit}>Save Settings</Button>
-                        </Wrap>
-                      ) : (
-                        <>
+                          <AlertDescription>Settings with this name already exist! Do you want to overwrite?</AlertDescription>
+                        </Alert>
+                        <Stack spacing="6">
+                          <Wrap align="center">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => {
+                                cancelSave();
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                            <Button colorScheme="warning" onClick={handleSubmit}>Yes, Overwrite</Button>
+                          </Wrap>
+                        </Stack>
+                      </>
+                    )}
+                  </>
+                )
+              }
 
-                          <Alert status="warning">
-                            <AlertIcon />
-                            <AlertDescription>Settings with this name already exist! Do you want to overwrite?</AlertDescription>
-                          </Alert>
-                          <Stack spacing="6">
-                            <Wrap align="center">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                  cancelSave();
-                                }}
-                              >
-                                Cancel
-                              </Button>
-                              <Button colorScheme="warning" onClick={handleSubmit}>Yes, Overwrite</Button>
-                            </Wrap>
-                          </Stack>
-                        </>
-                      )}
-                    </>
-                  )
-                }
-
-              </Stack>
-            </CardBody>
-          </Card>
+            </Stack>
+          </div>
         </div>
-      </div>
+      </div >
     </>
   );
 };

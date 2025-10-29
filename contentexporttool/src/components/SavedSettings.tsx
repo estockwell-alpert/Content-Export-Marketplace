@@ -2,7 +2,7 @@
 
 import { ISettings } from "@/models/ISettings";
 import { Button, Card, CardBody, Heading, Icon, Input, Stack, Table, Tbody, Td, Th, Thead, Tr, Wrap } from "@chakra-ui/react";
-import { mdiPencilOutline, mdiTrashCanOutline } from "@mdi/js";
+import { mdiClose, mdiPencilOutline, mdiTrashCanOutline } from "@mdi/js";
 
 import React, { useEffect, useState } from "react";
 import { AuthorInfo } from "./AuthorInfo";
@@ -109,62 +109,70 @@ export const ManageSavedSettings = () => {
 
             <div id="save-settings" className={'save-settings modal ' + (renaming ? 'open' : '')}>
                 <div className="inner">
-                    <Card>
+                    <div className="px-4 py-4">
+                        <Stack spacing="4">
 
-                        <CardBody>
-                            <Stack spacing="4">
-                                <label>Enter a new name for &quot;{selectedSettings?.name}&quot;</label>
-                                <Input
-                                    value={saveName}
-                                    aria-label="Enter a name for the settings"
-                                    type="text"
-                                    onChange={(e) => setSaveName(e.target.value)}
-                                    placeholder="e.g. Whitepapers Export"
-                                    className={'font-mono text-sm '}
-                                />
+                            <div className="flex items-end justify-between">
+                                <Heading>Rename</Heading>
+                                <Button className="desktop" variant="ghost" size="sm" onClick={() => setRenaming(false)}>
+                                    <Icon><path d={mdiClose} /></Icon>
+                                </Button>
+                            </div>
 
-                                <Wrap align="center">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={() => {
-                                            setRenaming(false);
-                                        }}
-                                    >
-                                        Cancel
-                                    </Button>
-                                    <Button disabled={saveName === null || saveName === ""} onClick={handleSubmitRename}>Save Settings</Button>
-                                </Wrap>
+                            <label>Enter a new name for &quot;{selectedSettings?.name}&quot;</label>
+                            <Input
+                                value={saveName}
+                                aria-label="Enter a name for the settings"
+                                type="text"
+                                onChange={(e) => setSaveName(e.target.value)}
+                                placeholder="e.g. Whitepapers Export"
+                                className={'font-mono text-sm '}
+                            />
 
-                            </Stack>
-                        </CardBody>
-                    </Card>
+                            <Wrap align="center">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => {
+                                        setRenaming(false);
+                                    }}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button disabled={saveName === null || saveName === ""} onClick={handleSubmitRename}>Save Settings</Button>
+                            </Wrap>
+
+                        </Stack>
+                    </div>
                 </div>
             </div >
 
             <div id="save-settings" className={'save-settings modal ' + (deleting ? 'open' : '')}>
                 <div className="inner">
-                    <Card>
+                    <div className="px-4 py-4">
+                        <Stack spacing="4">
+                            <div className="flex items-end justify-between">
+                                <Heading>Delete</Heading>
+                                <Button className="desktop" variant="ghost" size="sm" onClick={() => setDeleting(false)}>
+                                    <Icon><path d={mdiClose} /></Icon>
+                                </Button>
+                            </div>
+                            <label>Are you sure you want to delete &quot;{selectedSettings?.name}&quot;?</label>
+                            <Wrap align="center">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => {
+                                        setDeleting(false);
+                                    }}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button colorScheme="danger" onClick={handleDelete}>Confirm</Button>
+                            </Wrap>
 
-                        <CardBody>
-                            <Stack spacing="4">
-                                <label>Are you sure you want to delete &quot;{selectedSettings?.name}&quot;?</label>
-                                <Wrap align="center">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={() => {
-                                            setDeleting(false);
-                                        }}
-                                    >
-                                        Cancel
-                                    </Button>
-                                    <Button colorScheme="danger" onClick={handleDelete}>Confirm</Button>
-                                </Wrap>
-
-                            </Stack>
-                        </CardBody>
-                    </Card>
+                        </Stack>
+                    </div>
                 </div>
             </div >
             <AuthorInfo />

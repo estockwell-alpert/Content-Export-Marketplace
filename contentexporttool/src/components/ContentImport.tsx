@@ -3,7 +3,7 @@ import { PostMutationQuery } from "@/services/contentImportUtil";
 import { Input, Button, Alert, AlertDescription, Stack, Heading, AlertIcon, Radio } from "@chakra-ui/react";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 import Papa from 'papaparse';
-import { ChangeEvent, FC, useState } from "react";
+import { FC, useState } from "react";
 import { Separator } from "./ui/separator";
 import { AuthorInfo } from "./AuthorInfo";
 
