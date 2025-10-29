@@ -521,9 +521,9 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
             <div ref={filtersEl} className="toggleSection">
               <Stack spacing='6'>
                 <Stack spacing='2'>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-end justify-between">
                     <label className="text-sm font-medium">Start Item(s)</label>
-                    <div className="flex items-center gap-2 mt-4">
+                    <div className="flex items-center gap-2">
                       <Button size="sm" onClick={() => setBrowseContentOpen(true)}>
                         Browse
                       </Button>
@@ -546,19 +546,17 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                       </AlertDescription>
                     </Alert>
                   )}
-                  <Alert variant="default" className="mt-2">
-                    <AlertDescription className="text-xs">
-                      Enter GUIDs of starting nodes separated by commas. Only content beneath these nodes will be
-                      exported.
-                    </AlertDescription>
-                  </Alert>
+                  <div className="text-muted-foreground text-xs">
+                    Enter GUIDs of starting nodes separated by commas. Only content beneath these nodes will be
+                    exported.
+                  </div>
                 </Stack>
 
                 {/* Templates Section */}
                 <Stack spacing='2'>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-end justify-between">
                     <label className="text-sm font-medium">Templates</label>
-                    <div className="flex items-center gap-2 mt-4">
+                    <div className="flex items-center gap-2">
                       <Button size="sm" onClick={() => setBrowseTemplatesOpen(true)}>
                         Browse
                       </Button>
@@ -580,6 +578,9 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                       </AlertDescription>
                     </Alert>
                   )}
+                  <div className="text-muted-foreground text-xs">
+                    Enter template GUIDs separated by commas. Leave blank to include all templates.
+                  </div>
                   <div className="flex items-center gap-2">
                     <Checkbox
                       id={`checkbox-template`}
@@ -589,15 +590,12 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                     />
                     <span className="flex-grow">Include items that inherit these templates</span>
                   </div>
-                  <Alert variant="default" className="mt-2">
-                    <AlertDescription className="text-xs">
-                      Enter template GUIDs separated by commas. Leave blank to include all templates.
-                    </AlertDescription>
-                  </Alert>
+
+
                 </Stack>
 
                 <Stack spacing='2'>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-end justify-between">
                     <label className="text-sm font-medium">Language</label>
 
                     <div className="flex items-center gap-2">
@@ -631,7 +629,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
             <div ref={dataEl} className="toggleSection">
               {/* Fields Section */}
               <Stack spacing='2'>
-                <div className="flex items-center justify-between">
+                <div className="flex items-end justify-between">
                   <label className="text-sm font-medium">Fields</label>
                   <div className="flex items-center gap-2">
 
@@ -651,11 +649,9 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                   className="text-sm"
                 />
                 {templates === '' &&
-                  <Alert variant="default" className="mt-2">
-                    <AlertDescription className="text-xs">
-                      Select at least one template to browse fields
-                    </AlertDescription>
-                  </Alert>
+                  <div className="text-muted-foreground text-xs">
+                    Select at least one template to browse fields
+                  </div>
                 }
 
                 <div className="flex items-center gap-2">
@@ -749,12 +745,10 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                   />
                   <span className="flex-grow">Export Linked Item Names</span>
                 </div>
-                <Alert variant="default" className="mt-2">
-                  <AlertDescription className="text-xs">
-                    By default, all fields are exported as raw values. Check this box to export the Name of linked
-                    items instead of Guid ID. Note that this data is informational and NOT valid for Import
-                  </AlertDescription>
-                </Alert>
+                <div className="text-muted-foreground text-xs">
+                  By default, all fields are exported as raw values. Check this box to export the Name of linked
+                  items instead of Guid ID. Note that this data is informational and NOT valid for Import
+                </div>
               </Stack>
             </div>
           </Card>

@@ -102,6 +102,10 @@ a {
   top: 50%;
 }
 
+.text-xs {
+  font-size: 12px;
+}
+
 p[data-slot='dialog-description'] {
   a {
     color: #3498db;
@@ -902,3 +906,7 @@ select option {
 .tabcontainer button:not(.data-\[state\=active\]\:bg-background[data-state=active]):hover {
   background: var(--colors-neutral-bg);
 } 
+
+label {
+    color: var(--colors-neutral-fg);
+}
