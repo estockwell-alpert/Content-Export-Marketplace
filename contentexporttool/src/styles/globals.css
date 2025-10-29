@@ -913,3 +913,9 @@ input.file-input {
   width: auto;
   display: inline-block;
 }
+
+@media (min-width: 760px) {
+  .desktop-50 {
+    width: 49%;
+  }
+}

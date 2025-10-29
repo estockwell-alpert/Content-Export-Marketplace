@@ -515,16 +515,16 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       </div>
 
       <div className="space-y-6">
-        <Stack spacing="4">
+        <Wrap spacing="4" className="items-center grow flex">
           {error && <Alert status="error">
             <AlertIcon />
             <AlertDescription>Something went wrong: {errorMessage}</AlertDescription>
           </Alert>}
-          <Card variant="filled" className="rounded-sm border bg-card p-6">
+          <Card variant="filled" className="rounded-sm border bg-card p-6 desktop-50">
             <Stack spacing="6">
               <Wrap align="center">
                 <Heading size="md">Filters</Heading >
-                <Button variant="ghost" onClick={() => toggleSection(filtersEl, filtersOpen, filtersHeight, setFiltersOpen)} >
+                <Button className="mobile" variant="ghost" onClick={() => toggleSection(filtersEl, filtersOpen, filtersHeight, setFiltersOpen)} >
                   <Icon><path d={filtersOpen ? mdiChevronUp : mdiChevronDown} /></Icon>
                 </Button>
               </Wrap>
@@ -627,11 +627,11 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
               </Stack>
             </div>
           </Card>
-          <Card variant="filled" className="rounded-sm border bg-card p-6">
+          <Card variant="filled" className="rounded-sm border bg-card p-6 desktop-50">
             <Stack spacing="6">
               <Wrap align="center">
                 <Heading size="md">Data</Heading>
-                <Button variant="ghost" onClick={() => toggleSection(dataEl, dataOpen, dataHeight, setDataOpen)} >
+                <Button className="mobile" variant="ghost" onClick={() => toggleSection(dataEl, dataOpen, dataHeight, setDataOpen)} >
                   <Icon><path d={dataOpen ? mdiChevronUp : mdiChevronDown} /></Icon>
                 </Button>
               </Wrap>
@@ -755,7 +755,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
               </Stack>
             </div>
           </Card>
-        </Stack>
+        </Wrap>
 
         <SaveSettingsModal open={isModalOpen} emptySettings={emptySettings} onOpenChange={setIsModalOpen} onSubmit={handleSaveSettings} />
 
