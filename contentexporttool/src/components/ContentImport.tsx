@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { PostMutationQuery } from "@/services/contentImportUtil";
-import { Input, Button, Alert, AlertDescription, Stack, Heading, AlertIcon } from "@chakra-ui/react";
+import { Input, Button, Alert, AlertDescription, Stack, Heading, AlertIcon, Radio } from "@chakra-ui/react";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 import Papa from 'papaparse';
-import { FC, useState } from "react";
+import { ChangeEvent, FC, useState } from "react";
 import { Separator } from "./ui/separator";
 import { AuthorInfo } from "./AuthorInfo";
 
@@ -142,33 +142,23 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                         )}
 
                         <div className="importOptions">
-                            <div className="radio">
-                                <label>
-                                    <input
-                                        type="radio"
-                                        value="update"
-                                        checked={isUpdate}
-                                        onChange={() => {
-                                            setIsUpdate(true);
-                                            setIsCreate(false);
-                                        }}
-                                    />
-                                    Update
-                                </label>
+                            <div className="radio mb-2">
+                                <Radio
+                                    id={`radio-update`}
+                                    isChecked={isUpdate}
+                                    onChange={() => { setIsUpdate(true); setIsCreate(false); }}
+                                    className="mr-4"
+                                />
+                                <button onClick={() => { setIsUpdate(true); setIsCreate(false); }} className="flex-grow pl-2">Update</button>
                             </div>
                             <div className="radio">
-                                <label>
-                                    <input
-                                        type="radio"
-                                        value="create"
-                                        checked={isCreate}
-                                        onChange={() => {
-                                            setIsCreate(true);
-                                            setIsUpdate(false);
-                                        }}
-                                    />
-                                    Create
-                                </label>
+                                <Radio
+                                    id={`radio-create`}
+                                    isChecked={isCreate}
+                                    onChange={() => { setIsCreate(true); setIsUpdate(false) }}
+                                    className="mr-4"
+                                />
+                                <button onClick={() => { setIsUpdate(false); setIsCreate(true); }} className="flex-grow pl-2">Create</button>
                             </div>
                         </div>
 

@@ -586,9 +586,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                       id={`checkbox-template`}
                       isChecked={inheritors}
                       onChange={(event: ChangeEvent<HTMLInputElement>) => setInheritors(event.target.checked === true)}
-                      className="mr-2"
                     />
-                    <span className="flex-grow">Include items that inherit these templates</span>
+                    <button onClick={() => setInheritors(!inheritors)} className="flex-grow">Include items that inherit these templates</button>
                   </div>
 
 
@@ -659,9 +658,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                     id={`checkbox-template`}
                     isChecked={allFields}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setAllFields(event.target.checked === true)}
-                    className="mr-2"
                   />
-                  <span className="flex-grow">Export all fields</span>
+                  <button onClick={() => setAllFields(!allFields)} className="flex-grow">Export all fields</button>
                 </div>
 
                 <div className="">
@@ -678,9 +676,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                     id={`checkbox-template`}
                     isChecked={includeTemplate}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setIncludeTemplate(event.target.checked === true)}
-                    className="mr-2"
                   />
-                  <span className="flex-grow">Template</span>
+                  <button onClick={() => setIncludeTemplate(!includeTemplate)} className="flex-grow">Template</button>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -688,9 +685,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                     id={`checkbox-lang`}
                     isChecked={includeLang}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setIncludeLang(event.target.checked === true)}
-                    className="mr-2"
                   />
-                  <span className="flex-grow">Language</span>
+                  <button onClick={() => setIncludeLang(!includeLang)} className="flex-grow">Language</button>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -698,9 +694,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                     id={`checkbox-created`}
                     isChecked={createdDate}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setCreatedDate(event.target.checked === true)}
-                    className="mr-2"
                   />
-                  <span className="flex-grow">Created Date</span>
+                  <button onClick={() => setCreatedDate(!createdDate)} className="flex-grow">Created Date</button>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -708,9 +703,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                     id={`checkbox-createdBy`}
                     isChecked={createdBy}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setCreatedBy(event.target.checked === true)}
-                    className="mr-2"
                   />
-                  <span className="flex-grow">Created By</span>
+                  <button onClick={() => setCreatedBy(!createdBy)} className="flex-grow">Created By</button>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -718,9 +712,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                     id={`checkbox-updatedDate`}
                     isChecked={updatedDate}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setUpdatedDate(event.target.checked === true)}
-                    className="mr-2"
                   />
-                  <span className="flex-grow">Updated Date</span>
+                  <button onClick={() => setUpdatedDate(!updatedDate)} className="flex-grow">Updated Date</button>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -728,9 +721,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                     id={`checkbox-updatedBy`}
                     isChecked={updatedBy}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setUpdatedBy(event.target.checked === true)}
-                    className="mr-2"
                   />
-                  <span className="flex-grow">Updated By</span>
+                  <button onClick={() => setUpdatedBy(!updatedBy)} className="flex-grow">Updated By</button>
                 </div>
 
                 <div className="flex items-center justify-between mt-4">
@@ -741,9 +733,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                     id={`checkbox-convertGuids`}
                     isChecked={convertGuids}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setConvertGuids(event.target.checked === true)}
-                    className="mr-2"
                   />
-                  <span className="flex-grow">Export Linked Item Names</span>
+                  <button onClick={() => setConvertGuids(!convertGuids)} className="flex-grow">Export Linked Item Names</button>
                 </div>
                 <div className="text-muted-foreground text-xs">
                   By default, all fields are exported as raw values. Check this box to export the Name of linked
