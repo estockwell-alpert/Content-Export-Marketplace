@@ -904,3 +904,12 @@ select option {
 label {
     color: var(--colors-neutral-fg);
 }
+
+input.file-input {
+  padding: 0;
+  outline: none;
+  border: none;
+  border-radius: 0;
+  width: auto;
+  display: inline-block;
+}

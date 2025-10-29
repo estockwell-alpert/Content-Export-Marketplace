@@ -112,22 +112,25 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                         </Stack>
                     </div>
                     <div className="space-y-6">
-                        <div className="grid w-full max-w-sm items-center gap-1.5">
-                            <div className="flex justify-between gap-4">
-                                <Input
-                                    key={fileKey}
-                                    id="inptFile"
-                                    type="file"
-                                    accept=".csv,.xlsx"
-                                    onChange={onFileChange}
-                                    className="cursor-pointer"
-                                />
-                                <Button onClick={clearFileInput} variant="outline">Clear</Button>
+                        <div className="w-full max-w-sm items-center gap-1.5">
+                            <Input
+                                key={fileKey}
+                                id="inptFile"
+                                type="file"
+                                accept=".csv,.xlsx"
+                                onChange={onFileChange}
+                                className="cursor-pointer file-input"
+                            />
+                            <div className="flex gap-2">
+                                <Button onClick={handleRunImport} disabled={!selectedFile}>
+                                    Import
+                                </Button>
+                                <Button onClick={clearFileInput} variant="ghost">Clear</Button>
+
+
                             </div>
 
-                            <Button onClick={handleRunImport} disabled={!selectedFile}>
-                                Import
-                            </Button>
+
                         </div>
 
                         {selectedFile && (
