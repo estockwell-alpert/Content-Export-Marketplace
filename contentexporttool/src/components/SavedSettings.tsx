@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { ISettings } from "@/models/ISettings";
-import { Button, Card, CardBody, Heading, Icon, Input, Stack, Table, Tbody, Td, Th, Thead, Tr, Wrap } from "@chakra-ui/react";
+import { Button, Heading, Icon, Input, Stack, Table, Tbody, Td, Th, Thead, Tr, Wrap } from "@chakra-ui/react";
 import { mdiClose, mdiPencilOutline, mdiTrashCanOutline } from "@mdi/js";
 
 import React, { useEffect, useState } from "react";
@@ -113,7 +113,7 @@ export const ManageSavedSettings = () => {
                         <Stack spacing="4">
 
                             <div className="flex items-end justify-between">
-                                <Heading>Rename</Heading>
+                                <Heading size="md">Rename</Heading>
                                 <Button className="desktop" variant="ghost" size="sm" onClick={() => setRenaming(false)}>
                                     <Icon><path d={mdiClose} /></Icon>
                                 </Button>
@@ -152,7 +152,7 @@ export const ManageSavedSettings = () => {
                     <div className="px-4 py-4">
                         <Stack spacing="4">
                             <div className="flex items-end justify-between">
-                                <Heading>Delete</Heading>
+                                <Heading size="md">Delete</Heading>
                                 <Button className="desktop" variant="ghost" size="sm" onClick={() => setDeleting(false)}>
                                     <Icon><path d={mdiClose} /></Icon>
                                 </Button>

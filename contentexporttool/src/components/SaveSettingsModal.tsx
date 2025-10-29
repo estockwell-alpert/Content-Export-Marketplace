@@ -71,7 +71,7 @@ export const SaveSettingsModal = ({ open, onOpenChange, onSubmit, emptySettings 
             <Stack spacing="4">
 
               <div className="flex items-end justify-between">
-                <Heading>Save Settings</Heading>
+                <Heading size="md">Save Settings</Heading>
                 <Button className="desktop" variant="ghost" size="sm" onClick={() => cancelSave()}>
                   <Icon><path d={mdiClose} /></Icon>
                 </Button>
@@ -109,7 +109,7 @@ export const SaveSettingsModal = ({ open, onOpenChange, onSubmit, emptySettings 
                     />
 
                     {emptySettings &&
-                      <Alert status="error">
+                      <Alert status="warning">
                         <AlertIcon />
                         <AlertDescription>You haven&apos;t entered any settings. Are you sure you want to save empty settings?</AlertDescription>
                       </Alert>}
@@ -117,7 +117,7 @@ export const SaveSettingsModal = ({ open, onOpenChange, onSubmit, emptySettings 
                       <Wrap align="center">
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="ghost"
                           onClick={() => {
                             cancelSave();
                           }}
