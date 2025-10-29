@@ -5,6 +5,7 @@ import { Button, Card, CardBody, Heading, Icon, Input, Stack, Table, Tbody, Td, 
 import { mdiPencilOutline, mdiTrashCanOutline } from "@mdi/js";
 
 import React, { useEffect, useState } from "react";
+import { AuthorInfo } from "./AuthorInfo";
 
 
 export const ManageSavedSettings = () => {
@@ -57,8 +58,8 @@ export const ManageSavedSettings = () => {
 
     return (
         <>
-            <Card>
-                <CardBody>
+            <div className="mt-4 mb-6">
+                <div>
                     <Stack spacing="4">
                         <Heading>Managed saved settings</Heading>
                         {(!savedSettings || savedSettings.length === 0) && <p>No settings to show</p>}
@@ -102,8 +103,8 @@ export const ManageSavedSettings = () => {
                             </Tbody>
                         </Table>
                     </Stack>
-                </CardBody>
-            </Card >
+                </div>
+            </div >
 
 
             <div id="save-settings" className={'save-settings modal ' + (renaming ? 'open' : '')}>
@@ -166,6 +167,7 @@ export const ManageSavedSettings = () => {
                     </Card>
                 </div>
             </div >
+            <AuthorInfo />
         </>
     );
 };

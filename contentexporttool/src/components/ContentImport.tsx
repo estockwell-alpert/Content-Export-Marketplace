@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { PostMutationQuery } from "@/services/contentImportUtil";
-import { Card, CardHeader, Input, Button, Alert, AlertDescription, Stack, Heading, AlertIcon } from "@chakra-ui/react";
+import { Input, Button, Alert, AlertDescription, Stack, Heading, AlertIcon } from "@chakra-ui/react";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 import Papa from 'papaparse';
 import { FC, useState } from "react";
 import { Separator } from "./ui/separator";
-import { CardContent } from "./ui/card";
 import { AuthorInfo } from "./AuthorInfo";
 
 
@@ -102,8 +101,8 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
         <>
             <style>{`.downloadBtnWrapper { display: none }`}</style>
             <Stack spacing="4" >
-                <Card className="rounded-sm border bg-card">
-                    <CardHeader>
+                <div className="rounded-sm border bg-card mt-4">
+                    <div className=" mb-4">
                         <Stack spacing={2}>
                             <Heading>Import content</Heading>
                             <p>
@@ -111,8 +110,8 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                             </p>
 
                         </Stack>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
+                    </div>
+                    <div className="space-y-6">
                         <div className="grid w-full max-w-sm items-center gap-1.5">
                             <div className="flex justify-between gap-4">
                                 <Input
@@ -252,8 +251,8 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                             </AlertDescription>
                         </Alert>
                         <br />
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
                 <AuthorInfo />
             </Stack>
         </>

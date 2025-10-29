@@ -2,7 +2,7 @@
 import { useMarketplaceClient } from "@/utils/hooks/useMarketplaceClient";
 import { useState, useEffect } from "react";
 import sitecoreTheme, { toastOptions } from '@sitecore/blok-theme'
-import { Alert, AlertDescription, AlertIcon, Button, ButtonGroup, ChakraProvider, Spinner } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, ChakraProvider, Spinner } from "@chakra-ui/react";
 import { ExportTool } from "@/components/ContentExport";
 import { TabsContent, TabsList, TabsTrigger, Tabs } from "@/ui/tabs";
 import { ImportTool } from "@/components/ContentImport";
