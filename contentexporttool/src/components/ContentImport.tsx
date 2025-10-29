@@ -105,7 +105,7 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                 <Card className="rounded-sm border bg-card">
                     <CardHeader>
                         <Stack spacing={2}>
-                            <Heading>Import Content</Heading>
+                            <Heading>Import content</Heading>
                             <p>
                                 Import content from CSV files into your Sitecore instance <br />
                             </p>

@@ -876,3 +876,29 @@ select option {
   transition: 1s ease;
   overflow: hidden;
 }
+
+.tabcontainer {
+  border: 1px solid;
+  border-color: var(--colors-chakra-border-color);
+  border-radius: var(--radii-md);
+  padding: 0.1875rem;
+  gap: var(--space-1);
+  background:white;
+}
+
+.tabcontainer button {
+  border-radius: var(--radii-md);
+}
+
+.tabcontainer .data-\[state\=active\]\:bg-background[data-state=active] {
+  color: var(--colors-primary-fg);
+  background: var(--colors-primary-bg);
+} 
+
+.tabcontainer button:not(.data-\[state\=active\]\:bg-background[data-state=active]) {
+  color: var(--colors-neutral-fg)
+}
+
+.tabcontainer button:not(.data-\[state\=active\]\:bg-background[data-state=active]):hover {
+  background: var(--colors-neutral-bg);
+} 

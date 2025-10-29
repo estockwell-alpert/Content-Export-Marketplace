@@ -452,7 +452,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       <Card>
         <CardHeader className="flex items-center gap-6" ref={mainHeaderEl}>
           <Stack spacing={2} className="grow">
-            <Heading >Export Content</Heading >
+            <Heading >Export content</Heading >
             <p>Export content from your Sitecore instance</p>
 
             <div className="">
