@@ -919,3 +919,7 @@ input.file-input {
     width: 49%;
   }
 }
+
+.align-base {
+  align-items: baseline;
+}

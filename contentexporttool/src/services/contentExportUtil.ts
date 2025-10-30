@@ -279,7 +279,7 @@ export const ProcessFieldValue = async (
   if (fieldValue.indexOf(',') > -1) {
     const cleanFieldValue = fieldValue.replace(/[\n\r\t]/gm, '').replace(/"/g, '""');
     fieldValue = '"' + cleanFieldValue + '"';
-  }else {
+  } else {
     fieldValue = fieldValue.replaceAll("\n", "\\n").replaceAll("\r", "\\r");
   }
 
@@ -361,7 +361,9 @@ export const GetInheritorTemplates = async (
 export const GetAvailableFields = async (
   appContext: any,
   client: ClientSDK | null,
-  templates?: string): Promise<string[]> => {
+  templates?: string,
+  refresh?: boolean
+): Promise<string[]> => {
 
 
   if (!templates || templates === '') {
@@ -372,7 +374,7 @@ export const GetAvailableFields = async (
   }
 
   const templateKeyFields = localStorage.getItem(templates);
-  if (templateKeyFields) {
+  if (templateKeyFields && !refresh) {
     const fields = JSON.parse(templateKeyFields) as string[];
     return fields;
   } else {

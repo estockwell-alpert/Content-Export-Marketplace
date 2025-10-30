@@ -1,5 +1,6 @@
 
-import { Button } from "@chakra-ui/react";
+import { Button, Icon } from "@chakra-ui/react";
+import { mdiClose, mdiRefresh } from "@mdi/js";
 import { Dispatch, SetStateAction, FC } from "react";
 
 interface FieldBrowseModalProps {
@@ -8,6 +9,7 @@ interface FieldBrowseModalProps {
   setBrowseContentOpen: Dispatch<SetStateAction<boolean>>;
   fields: string | undefined;
   setFields: Dispatch<SetStateAction<string | undefined>>;
+  refreshFields: () => Promise<void>;
 }
 
 export const FieldBrowseModal: FC<FieldBrowseModalProps> = ({
@@ -15,7 +17,8 @@ export const FieldBrowseModal: FC<FieldBrowseModalProps> = ({
   browseContentOpen,
   setBrowseContentOpen,
   fields,
-  setFields
+  setFields,
+  refreshFields
 }) => {
 
   const addOrRemoveItem = (name: string) => {
@@ -65,8 +68,8 @@ export const FieldBrowseModal: FC<FieldBrowseModalProps> = ({
                     <Button variant="solid" size="sm" onClick={() => setFields(availableFields.join(', '))}>
                       Select All
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => setFields('')}>
-                      Remove All
+                    <Button title="Fields are cached. If you've added or removed fields in Sitecore, refresh to update this list" variant="outline" size="sm" onClick={() => refreshFields()}>
+                      <Icon><path d={mdiRefresh} /></Icon> Refresh
                     </Button>
                   </div>
                   <div className="items-center gap-2 mt-4 fieldsList">
@@ -88,7 +91,7 @@ export const FieldBrowseModal: FC<FieldBrowseModalProps> = ({
           </div>
           <div className="selected-box">
             <div className="selected-inner">
-              <div className="flex justify-between gap-2">
+              <div className="flex justify-between gap-2 align-base">
                 <ul>
                   {fields !== "" && (
                     <li>
@@ -108,6 +111,16 @@ export const FieldBrowseModal: FC<FieldBrowseModalProps> = ({
                     </li>
                   ))}
                 </ul>
+
+
+                <div className="flex items-center gap-2 mt-4">
+                  <Button variant="outline" size="sm" onClick={() => setFields('')}>
+                    Remove All
+                  </Button>
+                  <Button className="desktop" variant="ghost" size="sm" onClick={() => setBrowseContentOpen(false)}>
+                    <Icon><path d={mdiClose} /></Icon>
+                  </Button>
+                </div>
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="solid" size="sm" onClick={() => setBrowseContentOpen(false)}>
@@ -116,7 +129,7 @@ export const FieldBrowseModal: FC<FieldBrowseModalProps> = ({
               </div></div>
           </div>
         </div>
-      </div>
+      </div >
     </>
   );
 };

@@ -316,6 +316,13 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     }
   };
 
+  const refreshFields = async () => {
+    // refresh cached fields
+    const results = await GetAvailableFields(appContext, client, templates, true);
+    if (!results) return;
+    setAvailableFields(results);
+  }
+
   const browseFields = async () => {
     setAvailableFields([]);
 
@@ -329,10 +336,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       loadingModal.classList.remove("hidden");
     }
 
-    const results = await GetAvailableFields(appContext, client, templates);
-
-    console.log(results);
-
+    const results = await GetAvailableFields(appContext, client, templates, false);
     if (!results) return;
 
     setAvailableFields(results);
@@ -676,7 +680,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
 
                 <div className="">
 
-                  <FieldBrowseModal availableFields={availableFields ?? []} fields={fields} setFields={setFields} setBrowseContentOpen={setBrowseFieldsOpen} browseContentOpen={browseFieldsOpen}></FieldBrowseModal>
+                  <FieldBrowseModal availableFields={availableFields ?? []} fields={fields} setFields={setFields} setBrowseContentOpen={setBrowseFieldsOpen} browseContentOpen={browseFieldsOpen} refreshFields={refreshFields}></FieldBrowseModal>
                 </div>
 
                 {/* to do: make collapsible, fix to work fully with Edge */}
