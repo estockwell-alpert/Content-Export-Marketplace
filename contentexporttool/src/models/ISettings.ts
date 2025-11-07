@@ -7,6 +7,8 @@ export interface ISettings {
   languages?: string;
   schemaStartItem?: string;
   includeTemplate?: boolean;
+  includeTemplateId?: boolean;
+  includeParent?: boolean;
   includeLang?: boolean;
   createdDate?: boolean;
   createdBy?: boolean;

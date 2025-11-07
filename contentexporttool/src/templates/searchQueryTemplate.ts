@@ -78,6 +78,10 @@ export const AuthoringSearchQueryTemplate = gql`
       results {
         innerItem {
           itemId
+          parent {
+            name
+            itemId
+          }
           path
           name
           template {

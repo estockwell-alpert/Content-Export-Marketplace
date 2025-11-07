@@ -35,6 +35,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   const [updatedBy, setUpdatedBy] = useState<boolean>(false);
   const [convertGuids, setConvertGuids] = useState<boolean>(false);
   const [includeTemplate, setIncludeTemplate] = useState<boolean>(false);
+  const [includeTemplateId, setIncludeTemplateId] = useState<boolean>(false);
+  const [includeParent, setIncludeParent] = useState<boolean>(false);
   const [allFields, setAllFields] = useState<boolean>(false);
   const [inheritors, setInheritors] = useState<boolean>(false);
   const [includeLang, setIncludeLang] = useState<boolean>(false);
@@ -162,6 +164,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     !updatedDate &&
     !updatedBy &&
     !includeTemplate &&
+    !includeTemplateId &&
+    !includeParent &&
     !includeLang &&
     !convertGuids;
 
@@ -213,6 +217,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     setErrorStartItem(false);
     setErrorTemplates(false);
     setIncludeTemplate(false);
+    setIncludeTemplateId(false);
+    setIncludeParent(false);
     setAvailableFields([]);
     setInheritors(false);
     setAllFields(false);
@@ -254,7 +260,9 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       includeTemplate,
       includeLang,
       convertGuids,
-      allFields
+      allFields,
+      includeTemplateId,
+      includeParent
     );
 
     if (result.error) {
@@ -378,6 +386,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       schemaStartItem: templatesStartItem ?? '',
       includeLang: includeLang,
       includeTemplate: includeTemplate,
+      includeTemplateId: includeTemplateId,
+      includeParent: includeParent,
       createdBy: createdBy,
       createdDate: createdDate,
       updatedBy: updatedBy,
@@ -424,6 +434,8 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
     setLanguages(setting.languages);
     setIncludeLang(setting.includeLang ?? false);
     setIncludeTemplate(setting.includeTemplate ?? false);
+    setIncludeTemplateId(setting.includeTemplateId ?? false);
+    setIncludeParent(setting.includeParent ?? false);
     setCreatedBy(setting.createdBy ?? false);
     setCreatedDate(setting.createdDate ?? false);
     setUpdatedBy(setting.updatedBy ?? false);
@@ -685,7 +697,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
 
                 {/* to do: make collapsible, fix to work fully with Edge */}
                 <div className="flex items-center justify-between mt-4">
-                  <label className="text-sm font-medium">Standard Fields</label>
+                  <label className="text-sm font-medium">Standard Fields & Data</label>
                 </div>
                 <div className="flex items-center gap-2">
                   <Checkbox
@@ -693,7 +705,25 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                     isChecked={includeTemplate}
                     onChange={(event: ChangeEvent<HTMLInputElement>) => setIncludeTemplate(event.target.checked === true)}
                   />
-                  <button onClick={() => setIncludeTemplate(!includeTemplate)} className="flex-grow">Template</button>
+                  <button onClick={() => setIncludeTemplate(!includeTemplate)} className="flex-grow">Template Name</button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id={`checkbox-template`}
+                    isChecked={includeTemplateId}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => setIncludeTemplateId(event.target.checked === true)}
+                  />
+                  <button onClick={() => setIncludeTemplate(!includeTemplate)} className="flex-grow">Template ID</button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id={`checkbox-template`}
+                    isChecked={includeParent}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => setIncludeParent(event.target.checked === true)}
+                  />
+                  <button onClick={() => setIncludeTemplate(!includeTemplate)} className="flex-grow">Parent ID</button>
                 </div>
 
                 <div className="flex items-center gap-2">

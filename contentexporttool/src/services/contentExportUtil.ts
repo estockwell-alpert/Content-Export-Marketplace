@@ -15,7 +15,9 @@ export const GenerateContentExport = async (
   includeTemplate?: boolean,
   includeLang?: boolean,
   convertGuids?: boolean,
-  allFields?: boolean
+  allFields?: boolean,
+  includeTemplateId?: boolean,
+  includeParent?: boolean
 ): Promise<any> => {
   // show loading modal
   const loadingModal = document.getElementById('loading-modal');
@@ -68,6 +70,12 @@ export const GenerateContentExport = async (
   let headerRow = 'Item Path,Name,ID,';
   if (includeTemplate) {
     headerRow += 'Template,';
+  }
+  if (includeTemplateId) {
+    headerRow += 'Template ID,';
+  }
+  if (includeParent) {
+    headerRow += 'Parent ID,';
   }
   if (includeLang) {
     headerRow += 'Language,';
@@ -127,6 +135,12 @@ export const GenerateContentExport = async (
 
     if (includeTemplate) {
       resultRow += result.template?.name + ',';
+    }
+    if (includeTemplateId) {
+      resultRow += result.template?.templateId + ',';
+    }
+    if (includeParent) {
+      resultRow += result.parent?.itemId + ',';
     }
     if (includeLang) {
       resultRow += result.language?.name + ',';
