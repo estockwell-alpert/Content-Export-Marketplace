@@ -64,7 +64,7 @@ Click Run Export. When the export is complete, the page will scroll to the top w
 
 ### Content Import:
 
-**To modify content**, I recommend exporting the content and fields and you want to modify first, editing the CSV file, and then uploading it. This ensures that your CSV file is already formatted correctly.
+**To modify content**, I recommend exporting the content and fields and you want to modify first, editing the CSV file, and then uploading it. This ensures that your CSV file is already formatted correctly. **ALWAYS MAKE A BACKUP PACKAGE OF YOUR CONTENT BEFORE MODIFYING IT WITH THE CONTENT IMPORT TOOL**
 
 <img width="656" height="946" alt="image" src="https://github.com/user-attachments/assets/e6f7247f-b8c5-42e5-b1e8-7301d09f7ed7" />
 
@@ -91,7 +91,7 @@ Example files:
 
 The Sitecore Content Export/Import Tool is a free-to-use tool provided as a courtesy. Users are responsible for understanding the tool and making their own export configurations and import files. Bug reports can be opened on this repo, but we are not responsible for helping users formulate their exports or imports. Documentation is available on our [blog](https://ericastockwellalpert.wordpress.com/2025/08/07/how-to-get-the-most-out-of-the-content-export-import-tool/) for learning how to use the tool.
 
-Since every environment is different, update processes should not be run in a production environment without your team or organization thoroughly testing first. We recommend testing all import processes in a development/staging environment. All users are responsible for their own content, and we are not responsible for any content changes made in error.
+Since every environment is different, update processes should not be run in a production environment without your team or organization thoroughly testing first. We recommend testing all import processes in a development/staging environment **and always making a backup package of your content before modifying it with the tool**. All users are responsible for their own content; we are not responsible for any content changes made in error.
 
 ## Privacy Policy ##
 
