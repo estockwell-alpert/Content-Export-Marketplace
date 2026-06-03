@@ -76,7 +76,7 @@ export const PostMutationQuery = async (
             query = query.replace('languageFragment', '');
         }
 
-        const fieldFragments = generateFieldsFragment(row);
+        const fieldFragments = await generateFieldsFragment(row, appContext, client);
 
         query = query.replace('fieldsFragment', fieldFragments);
 
@@ -172,11 +172,12 @@ export const PostMutationQuery = async (
     return messages;
 };
 
-export const generateFieldsFragment = (row: any) => {
+export const generateFieldsFragment = async (row: any, appContext: ApplicationContext | null, client: ClientSDK | null) => {
     let fieldFragments = '';
     for (const property in row) {
         // skip core columns
-        const field = property.trim().toLowerCase();
+        let field = property.trim().toLowerCase();
+        let fieldType = '';
         if (
             field === 'item path' ||
             field === 'template' ||
@@ -188,11 +189,19 @@ export const generateFieldsFragment = (row: any) => {
             continue;
         }
 
-        const value = row[property];
-
+        let value = row[property];
         // skip fields that don't exist
         if (value.toLowerCase() === "n/a") {
             continue;
+        }
+
+        // transform field if it includes type definition with pipe delimiter, e.g. "My Link Field|Link"
+        if (field.indexOf("|") > -1) {
+            const parts = field.split("|");
+            field = parts[0].trim();
+            fieldType = parts[1].trim().toLowerCase();
+
+            value = await transformFieldValue(value, fieldType, appContext, client);
         }
 
         const cleanValue = value.replaceAll("\"", "\\\"");
@@ -208,6 +217,95 @@ export const generateFieldsFragment = (row: any) => {
         fieldFragments += fieldFragment;
     }
     return fieldFragments;
+}
+
+export const transformFieldValue = async (value: string, fieldType: string, appContext: ApplicationContext | null, client: ClientSDK | null) => {
+    switch (fieldType.toLowerCase()) {
+        case 'link': {
+            // external links
+            if (value.toLowerCase().startsWith("http://") || (value.startsWith("/") && !value.toLowerCase().startsWith("/sitecore"))) {
+                return `<link anchor="" linktype="external" class="" title="" target="_blank" querystring="" url="${value}" />`;
+            }
+            if (value.toLowerCase().startsWith("mailto:")) {
+                return `<link anchor="" linktype="mailto" class="" title="" target="_blank" querystring="" url="${value}" />`;
+            }
+
+            // try process sitecore path to get item ID for internal links
+            if (value.toLowerCase().startsWith("/sitecore")) {
+                value = await getExistingItemId(appContext, client, value);
+            }
+
+            const possibleGuidValue = GetStringAsGuidString(value);
+
+            return `<link anchor="" linktype="internal" class="" title="" target="_blank" querystring="" id="${possibleGuidValue}" />`;
+        }
+        case 'image': {
+            // if value is already in Sitecore media format, return as is
+            if (value.toLowerCase().startsWith("/sitecore/media library")) {
+                const imageId = await getExistingItemId(appContext, client, value);
+                return `<image mediaid="${imageId}" alt="" />`;
+            }
+
+            return value;
+        }
+        case 'droplink':
+        case 'droptree': {
+            const itemId = await getExistingItemId(appContext, client, value);
+            return itemId;
+        }
+        case 'droplist': {
+            return value;
+        }
+        case 'treelist':
+        case 'multilist': {
+            const values = await Promise.all(value.split("|").map((x) => getExistingItemId(appContext, client, x.trim())));
+            return values.map(x => GetStringAsGuidString(x)).join("|");
+        }
+        case 'checkbox': {
+            return (value.toLowerCase() === "true" || value === "1") ? "1" : "0";
+        }
+        case 'date':
+        case 'datetime': {
+            const date = new Date(value);
+            if (!isNaN(date.getTime())) {
+                const pad = (n: number) => String(n).padStart(2, '0');
+                return `${date.getUTCFullYear()}${pad(date.getUTCMonth() + 1)}${pad(date.getUTCDate())}T${pad(date.getUTCHours())}${pad(date.getUTCMinutes())}${pad(date.getUTCSeconds())}Z`;
+            }
+            return value;
+        }
+        default:
+            return value;
+    }
+}
+
+export const GetStringAsGuidString = (value: string) => {
+    // Strip surrounding {}, [], or whitespace, then hyphens, and check for 32 hex chars
+    const stripped = value.trim().replace(/^[{[\s]+|[}\]\s]+$/g, '').replace(/-/g, '');
+    if (/^[0-9a-fA-F]{32}$/.test(stripped)) {
+        return `{${stripped.slice(0, 8)}-${stripped.slice(8, 12)}-${stripped.slice(12, 16)}-${stripped.slice(16, 20)}-${stripped.slice(20)}}`.toUpperCase();
+    }
+    return value;
+}
+
+export async function getExistingItemId(appContext: ApplicationContext | null, client: ClientSDK | null, path: string): Promise<string> {
+    if (!path.startsWith("/sitecore")) return path;
+
+    const getExistingItemQuery = `{
+                        item(
+                            where: {
+                                database: "master",
+                                path: "${path}"
+                            }
+                        ){
+                            itemId,
+                            name,
+                            path
+                        }
+                    }`
+
+    const response = await makeGraphQLQuery(appContext, client, getExistingItemQuery);
+
+    return response?.data?.data?.item?.itemId || path;
 }
 
 export const ResultsToXslx = (templates: ITemplateSchema[], fileName?: string, headers?: string[]) => {
@@ -335,4 +433,20 @@ export function fieldsSort(a: IField, b: IField) {
         return 1;
     }
     return 0;
+}
+
+export interface Item {
+    itemId: string;
+    name: string;
+    path: string;
+}
+
+export interface QueryItemData {
+    item: Item;
+}
+
+export interface QueryItemResponse {
+    data: {
+        data: QueryItemData;
+    };
 }

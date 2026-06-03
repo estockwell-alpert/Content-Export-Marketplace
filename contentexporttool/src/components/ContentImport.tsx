@@ -220,6 +220,21 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                                         <li>Field columns</li>
                                     </ul>
 
+                                    <p><b>Field Types:</b></p>
+                                    <p>By default, all content is imported as <i>raw values</i>. To import a value as a specific field type, you must append the field type to the field name, e.g. <b><code>ctaLink|Link</code></b> (where the first part is the field name and the second part is the field type)</p>
+
+                                    <ul className="list-disc pl-4 space-y-1">
+                                        <li>
+                                            <strong>Example raw value for non-designated field</strong> - ctaLink : {`<link anchor="" linktype="internal" class="" title="" target="_blank" querystring="" id="{96B3DE5F-55B3-48CE-AB9C-039CE1D27538}" />`}
+                                        </li>
+                                        <li>
+                                            <strong>Example value for designated Link field</strong> - ctaLink|Link : {`{96B3DE5F-55B3-48CE-AB9C-039CE1D27538}`}
+                                        </li>
+                                        <li>
+                                            <strong>Example value for designated Link field</strong> - ctaLink|Link : {`/sitecore/content/Home/About Us`}
+                                        </li>
+                                    </ul>
+
                                     <Separator />
 
                                     <div className="space-y-2">
