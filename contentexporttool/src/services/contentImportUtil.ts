@@ -259,7 +259,7 @@ export const transformFieldValue = async (value: string, fieldType: string, appC
         case 'treelist':
         case 'multilist': {
             const values = await Promise.all(value.split("|").map((x) => getExistingItemId(appContext, client, x.trim())));
-            return values.join("|");
+            return values.map(x => GetStringAsGuidString(x)).join("|");
         }
         case 'checkbox': {
             return (value.toLowerCase() === "true" || value === "1") ? "1" : "0";
