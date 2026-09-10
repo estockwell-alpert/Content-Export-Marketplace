@@ -191,33 +191,47 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                             <AlertDescription>
                                 <Stack spacing="4">
                                     <h3 className="font-medium">Getting Started</h3>
-                                    <p>Required CSV columns for updating items:</p>
-                                    <ul className="list-disc pl-4 space-y-1">
-                                        <li>
-                                            <strong>Item Path</strong> - Item path string e.g. /sitecore/content/Home
-                                        </li>
-                                        <li>
-                                            <strong>ID</strong> - Item ID (required if adding new language version)
-                                        </li>
-                                    </ul>
-                                    <p>Required CSV columns for new items:</p>
-                                    <ul className="list-disc pl-4 space-y-1">
-                                        <li>
-                                            <strong>Item Path</strong> - Parent item ID (GUID) or path
-                                        </li>
-                                        <li>
-                                            <strong>Template</strong> - Item template ID (GUID), path, or name
-                                        </li>
-                                        <li>
-                                            <strong>Name</strong> - Item name (string)
-                                        </li>
-                                    </ul>
+                                    {isUpdate && (
+                                        <>
+                                            <p>Required CSV columns for updating items:</p>
+                                            <ul className="list-disc pl-4 space-y-1">
+                                                <li>
+                                                    <strong>Item Path</strong> - Item path string e.g. /sitecore/content/Home
+                                                </li>
+                                                <li>
+                                                    <strong>ID</strong> - Item ID (required if adding new language version)
+                                                </li>
+                                            </ul>
+                                        </>
+                                    )}
+                                    {!isUpdate && (
+                                        <>
+                                            <p>Required CSV columns for new items:</p>
+                                            <ul className="list-disc pl-4 space-y-1">
+                                                <li>
+                                                    <strong>Parent</strong> - Parent item path or ID e.g. /sitecore/content/Home
+                                                </li>
+                                                <li>
+                                                    <strong>Template</strong> - Item template ID or path
+                                                </li>
+                                                <li>
+                                                    <strong>Name</strong> - Item name (string)
+                                                </li>
+                                            </ul>
+
+                                            <p><b>Important note about Creating new items:</b></p>
+                                            <p>If you are trying to export {'->'} create, you must export the required CSV columns for new items listed above, or edit your CSV file as needed. You can export the necessary columns by checking off Template ID and Parent ID</p>
+                                            <ul>
+                                                <li></li>
+                                            </ul>
+                                        </>
+                                    )}
                                     <p>Optional columns:</p>
                                     <ul className="list-disc pl-4 space-y-1">
                                         <li>
                                             <strong>Language</strong> - language code e.g. es-MX
                                         </li>
-                                        <li>Field columns</li>
+                                        <li>Field columns - Any additional fields you want to import for the item, e.g. title, description</li>
                                     </ul>
 
                                     <p><b>Field Types:</b></p>

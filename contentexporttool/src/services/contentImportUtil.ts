@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ITemplateSchema, IWorksheetSchema, IField } from '@/models/Templates';
 import { UpdateQueryTemplate, CreateQueryTemplate, CreateLanguageVersionQueryTemplate } from '@/templates/importQueryTemplates';
-import { makeGraphQLQuery } from '@/utils/helpers';
+import { getItemIdFromPath, makeGraphQLQuery, validateGuid } from '@/utils/helpers';
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 import * as XLSX from 'xlsx';
 
@@ -58,15 +58,34 @@ export const PostMutationQuery = async (
 
         const row = csvData[i];
         // basic data
-        query = query.replace('pathFragment', row['Item Path']);
-        query = query.replace('ItemName', row['Name']);
-        query = query.replace('ItemTemplate', row['Template']);
+        let itemPath = update ? row["Item Path"] : row["Parent"];
+        if (!validateGuid(itemPath)) {
+            itemPath = await getItemIdFromPath(client, itemPath);
+        }
 
-        if (!update && (!row['Item Path'] || !row['Name'] || !row['Template'])) {
-            if (loadingModal) {
-                loadingModal.classList.add("hidden");
+        let template = row["Template"];
+        if (!validateGuid(template)) {
+            template = await getItemIdFromPath(client, template);
+        }
+
+        query = query.replace('pathFragment', itemPath);
+        query = query.replace('ItemName', row['Name']);
+        query = query.replace('ItemTemplate', template);
+
+        if (update) {
+            if (!row['Item Path']) {
+                if (loadingModal) {
+                    loadingModal.classList.add("hidden");
+                }
+                return ['Missing required column: Item Path'];
             }
-            return ['Missing required columns. Please make sure your CSV includes columns for Item Path, Template, and Name'];
+        }else {
+            if (!row['Parent'] || !row['Template'] || !row['Name']) {
+                if (loadingModal) {
+                    loadingModal.classList.add("hidden");
+                }
+                return ['Missing required columns. Please make sure your CSV includes columns for Parent, Template, and Name'];
+            }
         }
 
         if (row['Language']) {
@@ -180,7 +199,9 @@ export const generateFieldsFragment = async (row: any, appContext: ApplicationCo
         let fieldType = '';
         if (
             field === 'item path' ||
+            field === 'parent' ||
             field === 'template' ||
+            field === 'template name' ||
             field === 'id' ||
             field === 'name' ||
             field === 'language' ||

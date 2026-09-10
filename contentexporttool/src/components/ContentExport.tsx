@@ -2,7 +2,7 @@
 import { IContentNode } from "@/models/IContentNode";
 import { ISettings } from "@/models/ISettings";
 import { GenerateContentExport, GetAvailableFields } from "@/services/contentExportUtil";
-import { convertStringToGuid, hasWindow, validateGuid } from "@/utils/helpers";
+import { convertStringToGuid, hasWindow } from "@/utils/helpers";
 import { Card, Button, Textarea, Alert, AlertDescription, Checkbox, Heading, CardBody, Stack, Wrap, Select, Icon, AlertIcon, useToast } from "@chakra-ui/react";
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from "react";
 import { Root, createRoot } from "react-dom/client";

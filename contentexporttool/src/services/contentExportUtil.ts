@@ -95,13 +95,13 @@ export const GenerateContentExport = async (
   const fieldNames = fields?.split(',') ?? [];
   let headerRow = 'Item Path,Name,ID,';
   if (includeTemplate) {
-    headerRow += 'Template,';
+    headerRow += 'Template Name,';
   }
   if (includeTemplateId) {
-    headerRow += 'Template ID,';
+    headerRow += 'Template,';
   }
   if (includeParent) {
-    headerRow += 'Parent ID,';
+    headerRow += 'Parent,';
   }
   if (includeLang) {
     headerRow += 'Language,';
