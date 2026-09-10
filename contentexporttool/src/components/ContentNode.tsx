@@ -62,7 +62,7 @@ export const ContentNode: FC<ContentNodeProps> = ({
   };
 
   const isSelected = () => {
-    const isSelected = currentSelections.some((node) => node.itemId === convertStringToGuid(item.itemId));
+    const isSelected = currentSelections.some((node) => node.itemId === convertStringToGuid(item.itemId) || node.path === item.path);
     return isSelected;
   };
 

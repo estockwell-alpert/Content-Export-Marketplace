@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IContentNode } from "@/models/IContentNode";
-import { stripGuid } from "@/utils/helpers";
 import { Alert, AlertDescription, AlertIcon, Button, Icon } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, FC, useState } from "react";
 import { ContentNode } from "./ContentNode";
@@ -39,13 +38,10 @@ export const ContentBrowseModal: FC<ContentBrowseModalProps> = ({
   const [error, setError] = useState<boolean>(false);
 
   const confirmSelection = () => {
-    const startItems = startItem?.split(',');
-    const newPaths = currentSelections
-      ?.map((item) => item.path.trim())
-      .filter((newPath) => !startItems.some((startId) => startId === stripGuid(newPath)));
-
-    const updatedStartItems = startItems.concat(newPaths).filter((id) => id && id !== '');
-    setStartItem(updatedStartItems?.join(', '));
+    const newPaths = currentSelections.map((selection) => selection.path).filter((id) => id && id !== '');
+    console.log("Previous start item: ", startItem);
+    // filter out any duplicates from updatedStartItems
+    setStartItem(newPaths?.join(', '));
     setBrowseContentOpen(false);
   };
 

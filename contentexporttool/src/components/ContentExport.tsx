@@ -177,9 +177,22 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   const handleStartItem = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const inputValue = event.target.value;
     setStartItem(inputValue);
+
+    // update current selections based on the new start item
+    const updatedSelections = inputValue ? inputValue.split(",").map(x => ({ path: x.trim(), itemId: x.trim(), name: x.substring(x.lastIndexOf('/') + 1) })) : [];
+    if (currentSelections !== updatedSelections){
+      setCurrentSelections(updatedSelections);
+    }
   };
   const handleTemplates = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTemplates(event.target.value);
+    const inputValue = event.target.value;
+    setTemplates(inputValue);
+
+    // update current selections based on the new start item
+    const updatedSelections = inputValue ? inputValue.split(",").map(x => ({ path: x.trim(), itemId: x.trim(), name: x.substring(x.lastIndexOf('/') + 1) })) : [];
+    if (currentSelections !== updatedSelections){
+      setCurrentTemplateSelections(updatedSelections);
+    }
   };
   const handleFields = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setFields(event.target.value);
