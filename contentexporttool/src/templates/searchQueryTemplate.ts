@@ -185,6 +185,7 @@ export const ItemChildrenQuery = gql`
         nodes {
           name
           itemId
+          path
           hasChildren
           template {
             name

@@ -17,7 +17,7 @@ interface ContentBrowseModalProps {
   setBrowseContentOpen: Dispatch<SetStateAction<boolean>>;
   startItem: string;
   setStartItem: Dispatch<SetStateAction<string>>;
-  startNode: { itemId: string; name: string };
+  startNode: { itemId: string; path: string; name: string };
   templatesOnly?: boolean;
 }
 
@@ -40,12 +40,12 @@ export const ContentBrowseModal: FC<ContentBrowseModalProps> = ({
 
   const confirmSelection = () => {
     const startItems = startItem?.split(',');
-    const newIds = currentSelections
-      ?.map((item) => item.itemId.trim())
-      .filter((newId) => !startItems.some((startId) => stripGuid(startId) === stripGuid(newId)));
+    const newPaths = currentSelections
+      ?.map((item) => item.path.trim())
+      .filter((newPath) => !startItems.some((startId) => startId === stripGuid(newPath)));
 
-    const udpatedStartItems = startItems.concat(newIds).filter((id) => id && id !== '');
-    setStartItem(udpatedStartItems?.join(', '));
+    const updatedStartItems = startItems.concat(newPaths).filter((id) => id && id !== '');
+    setStartItem(updatedStartItems?.join(', '));
     setBrowseContentOpen(false);
   };
 
@@ -74,6 +74,7 @@ export const ContentBrowseModal: FC<ContentBrowseModalProps> = ({
                 client={client}
                 item={{
                   itemId: startNode.itemId,
+                  path: startNode.path,
                   name: startNode.name,
                   children: [],
                   hasChildren: true,
@@ -102,6 +103,7 @@ export const ContentBrowseModal: FC<ContentBrowseModalProps> = ({
                         <a
                           onDoubleClick={() => removeItem(item.itemId)}
                           data-id={item.itemId}
+                          data-path={item.path}
                           data-name={item.name}
                           key={index}
                         >

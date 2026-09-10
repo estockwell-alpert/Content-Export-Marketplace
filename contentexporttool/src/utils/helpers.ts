@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ClientSDK } from "@sitecore-marketplace-sdk/client";
+import { getContextId } from "./client";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export const getGuids = (value: string): string[] => {
@@ -91,5 +92,60 @@ export const makeGraphQLQuery = async (appContext: any, client: ClientSDK | null
   console.log(response);
   return response;
 }
+
+export async function getItemIdFromPath(client: ClientSDK | null, path: string): Promise<string | null> {
+    const contextId = await getContextId(client);
+    if (!contextId) {
+        return null
+    }
+
+    // TODO: Update this once we've figured out what our item is
+    const response = await client?.mutate(
+        "xmc.authoring.graphql",
+        {
+            params: {
+                query: {
+                    sitecoreContextId: contextId,
+                },
+                body: {
+                    query: `{
+                        item(
+                            where: {
+                                database: "master",
+                                path: "${path}"
+                            }
+                        ){
+                            itemId,
+                            name,
+                            path
+                        }
+                    }`
+                }
+            }
+        }
+    ) as unknown as QueryItemResponse;
+
+    return response?.data?.data?.item?.itemId || null;
+}
+
+export interface Item {
+    itemId: string;
+    name: string;
+    path: string;
+    baseTemplate: {
+        value: string;
+    } | null;
+}
+
+export interface QueryItemData {
+    item: Item;
+}
+
+export interface QueryItemResponse {
+    data: {
+        data: QueryItemData;
+    };
+}
+
 
 export const hasWindow = (): boolean => typeof window !== undefined;

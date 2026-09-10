@@ -203,10 +203,10 @@ export const ImportTool: FC<ImportTool> = ({ appContext, client }) => {
                                     <p>Required CSV columns for new items:</p>
                                     <ul className="list-disc pl-4 space-y-1">
                                         <li>
-                                            <strong>Item Path</strong> - Parent item ID (GUID)
+                                            <strong>Item Path</strong> - Parent item ID (GUID) or path
                                         </li>
                                         <li>
-                                            <strong>Template</strong> - Item template (GUID)
+                                            <strong>Template</strong> - Item template ID (GUID), path, or name
                                         </li>
                                         <li>
                                             <strong>Name</strong> - Item name (string)

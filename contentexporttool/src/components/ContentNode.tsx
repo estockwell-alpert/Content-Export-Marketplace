@@ -69,7 +69,7 @@ export const ContentNode: FC<ContentNodeProps> = ({
   const isSelectable = !templatesOnly || item.template?.name === 'Template';
 
   return (
-    <li data-name={item.name} data-id={item.itemId}>
+    <li data-name={item.name} data-path={item.path} data-id={item.itemId}>
       {item.hasChildren && (!templatesOnly || !isSelectable) && (
         <a className="browse-expand" onClick={(e) => toggleNode(e)}>
           {isOpen ? '-' : '+'}

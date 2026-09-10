@@ -175,20 +175,10 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
   };
 
   const handleStartItem = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (!validateGuid(event.target.value ?? '')) {
-      setErrorStartItem(true);
-    } else {
-      setErrorStartItem(false);
-    }
     const inputValue = event.target.value;
     setStartItem(inputValue);
   };
   const handleTemplates = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (!validateGuid(event.target.value ?? '')) {
-      setErrorTemplates(true);
-    } else {
-      setErrorTemplates(false);
-    }
     setTemplates(event.target.value);
   };
   const handleFields = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -277,7 +267,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       setError(false);
       toast({
         description:
-          "Export complete. Click the Download Report button to download the report (right click and open in new window)",
+          "Export complete. Click the Download Report button if it does not automatically download",
         status: "success",
         isClosable: true,
       })
@@ -292,6 +282,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
 
   const selectNode = (e: any) => {
     const id = convertStringToGuid(e.target.parentElement.getAttribute('data-id'));
+    const path = e.target.parentElement.getAttribute('data-path');
     const name = e.target.parentElement.getAttribute('data-name');
 
     if (e.target.classList.contains('selected')) {
@@ -300,7 +291,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       setCurrentSelections(updatedSelections);
     } else {
       // add ID
-      const selectedItem = { itemId: id, name: name, children: [] };
+      const selectedItem = { itemId: id, path: path, name: name, children: [] };
       const selectedItems: any[] =
         currentSelections === undefined ? [selectedItem] : currentSelections?.concat(selectedItem);
       setCurrentSelections(selectedItems);
@@ -309,6 +300,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
 
   const selectTemplateNode = (e: any) => {
     const id = convertStringToGuid(e.target.parentElement.getAttribute('data-id'));
+    const path = e.target.parentElement.getAttribute('data-path');
     const name = e.target.parentElement.getAttribute('data-name');
 
     if (e.target.classList.contains('selected')) {
@@ -317,7 +309,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
       setCurrentTemplateSelections(updatedSelections);
     } else {
       // add ID
-      const selectedItem = { itemId: id, name: name, children: [] };
+      const selectedItem = { itemId: id, path: path, name: name, children: [] };
       const selectedItems: any[] =
         currentTemplateSelections === undefined ? [selectedItem] : currentTemplateSelections?.concat(selectedItem);
       setCurrentTemplateSelections(selectedItems);
@@ -458,7 +450,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
         startItem={startItem ?? ''}
         setStartItem={setStartItem}
         setCurrentSelections={setCurrentSelections}
-        startNode={{ itemId: '{11111111-1111-1111-1111-111111111111}', name: 'sitecore' }}
+        startNode={{ itemId: '{11111111-1111-1111-1111-111111111111}', path: '/sitecore', name: 'sitecore' }}
       ></ContentBrowseModal>
 
       {/* Template Browse */}
@@ -472,7 +464,7 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
         startItem={templatesStartItem ?? ''}
         setStartItem={setTemplates}
         setCurrentSelections={setCurrentTemplateSelections}
-        startNode={{ itemId: '{3C1715FE-6A13-4FCF-845F-DE308BA9741D}', name: 'templates' }}
+        startNode={{ itemId: '{3C1715FE-6A13-4FCF-845F-DE308BA9741D}', name: 'templates', path: '/sitecore/templates' }}
         templatesOnly={true}
       ></ContentBrowseModal>
 
@@ -564,18 +556,18 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                   <Textarea
                     value={startItem}
                     onChange={handleStartItem}
-                    placeholder="e.g. {D4D93D21-A8B4-4C0F-8025-251A38D9A04D}"
+                    placeholder="e.g. {D4D93D21-A8B4-4C0F-8025-251A38D9A04D} or /sitecore/content/Home"
                     className={'font-mono text-sm ' + (errorStartItem ? 'error' : '')}
                   />
                   {errorStartItem && (
                     <Alert variant="default" className="mt-2">
                       <AlertDescription className="text-xs error">
-                        Invalid start item. Start items must be entered as GUID IDs
+                        Invalid start item. Start items must be entered as GUID IDs or valid paths
                       </AlertDescription>
                     </Alert>
                   )}
                   <div className="text-muted-foreground text-xs">
-                    Enter GUIDs of starting nodes separated by commas. Only content beneath these nodes will be
+                    Enter GUIDs or Paths of starting nodes separated by commas. Only content beneath these nodes will be
                     exported.
                   </div>
                 </Stack>
@@ -596,18 +588,18 @@ export const ExportTool: FC<ExportToolProps> = ({ appContext, client, siteLangua
                   <Textarea
                     value={templates}
                     onChange={handleTemplates}
-                    placeholder="e.g. {CC92A3D8-105C-4016-8BD7-22162C1ED919}"
+                    placeholder="e.g. {CC92A3D8-105C-4016-8BD7-22162C1ED919} or /sitecore/templates/Project/page"
                     className={'font-mono text-sm ' + (errorTemplates ? 'error' : '')}
                   />
                   {errorTemplates && (
                     <Alert variant="default" className="mt-2">
                       <AlertDescription className="text-xs error">
-                        Invalid template. Templates must be entered as GUID IDs
+                        Invalid template. Templates must be entered as GUID IDs or Paths.
                       </AlertDescription>
                     </Alert>
                   )}
                   <div className="text-muted-foreground text-xs">
-                    Enter template GUIDs separated by commas. Leave blank to include all templates.
+                    Enter template GUIDs or Paths separated by commas. Leave blank to include all templates.
                   </div>
                   <div className="flex items-center gap-2">
                     <Checkbox

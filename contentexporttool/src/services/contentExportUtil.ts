@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ItemChildrenQuery } from "@/templates/searchQueryTemplate";
 import { GetSchemaQuery, GetSearchQuery } from "@/utils/createGqlQuery";
-import { getGuids, makeGraphQLQuery, validateMultiGuids } from "@/utils/helpers";
+import { getGuids, getItemIdFromPath, makeGraphQLQuery, validateGuid, validateMultiGuids } from "@/utils/helpers";
 import { ApplicationContext, ClientSDK } from "@sitecore-marketplace-sdk/client";
 
 export const GenerateContentExport = async (
@@ -47,8 +47,34 @@ export const GenerateContentExport = async (
     includeTemplate = true;
   }
 
+  // if startItem is path(s), convert to GUID(s)
+  const startItems = startItem?.split(",").map(x => x.trim());
+  if (startItems && startItems.length > 0) {
+    for (let i = 0; i < startItems.length; i++) {
+      if (!validateGuid(startItems[i])) {
+        const guidFromPath = await getItemIdFromPath(client, startItems[i]);
+        if (guidFromPath) {
+          startItems[i] = guidFromPath;
+        }
+      }
+    }
+  }
+
+  // if template(s) is path(s), convert to GUID(s)
+  const splitTemplates = templates?.split(",").map(x => x.trim());
+  if (splitTemplates && splitTemplates.length > 0) {
+    for (let i = 0; i < splitTemplates.length; i++) {
+      if (!validateGuid(splitTemplates[i])) {
+        const guidFromPath = await getItemIdFromPath(client, splitTemplates[i]);
+        if (guidFromPath) {
+          splitTemplates[i] = guidFromPath;
+        }
+      }
+    }
+  }
+
   // generate query
-  const querystring = GetSearchQuery(startItem, templates, fields, languages, cursor, allFields);
+  const querystring = GetSearchQuery(startItems?.join(","), splitTemplates?.join(","), fields, languages, cursor, allFields);
 
   // make GQL request
   const response = await makeGraphQLQuery(appContext, client, querystring);
