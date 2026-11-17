@@ -413,6 +413,21 @@ export const GetAvailableFields = async (
     return [];
   }
 
+  // transform all templates that are paths instead of IDs into IDs
+  const templateIds: string[] = [];
+  const splitTemplates = templates?.split(',').map(x => x.trim());
+  for (let i = 0; i < splitTemplates.length; i++) {
+    const template = splitTemplates[i];
+    if (!validateGuid(template)) {
+        const templateid = await getItemIdFromPath(client, template);
+        if (templateid) {
+          templateIds.push(templateid);
+        }
+    }else {
+      templateIds.push(template);
+    }
+  }
+
   const templateKeyFields = localStorage.getItem(templates);
   if (templateKeyFields && !refresh) {
     const fields = JSON.parse(templateKeyFields) as string[];
@@ -420,7 +435,6 @@ export const GetAvailableFields = async (
   } else {
     const fieldTemplateId = '{455A3E98-A627-4B40-8035-E683A0331AC7}';
 
-    const templateIds = templates?.split(',');
     const baseTemplates: string[] = [];
     const fields: string[] = [];
 
